@@ -107,7 +107,8 @@ Frontend will run on: **http://localhost:3000**
 ## Database Setup
 1. Download and Install MySQL
 
-2.Write the SQL code, **Create Database cms** ,
+2. Write the SQL code, **Create Database cms** ,
+   
 Then import the folder of sql database.
 
 ## Authentication System
