@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Debug User Data</title>
+</head>
+<body>
+    <h1>Debug Local Storage User Data</h1>
+    <pre id="output"></pre>
+    <script>
+        const user = JSON.parse(localStorage.getItem('user'));
+        document.getElementById('output').textContent = JSON.stringify(user, null, 2);
+        console.log('User data:', user);
+        console.log('club_id:', user?.club_id, 'type:', typeof user?.club_id);
+        console.log('role:', user?.role);
+    </script>
+</body>
+</html>

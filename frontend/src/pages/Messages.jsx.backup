@@ -1,0 +1,222 @@
+// club_mgnt_bak/frontend/src/pages/Messages.jsx
+import { useEffect, useState, useMemo } from "react";
+import axios from "axios";
+import { useNavigate, Link } from "react-router-dom";
+import { FiMail, FiArrowLeft, FiPlus, FiSearch, FiX, FiMessageSquare, FiSend } from "react-icons/fi";
+import { getImageUrl } from "../utils/imageHelper";
+import Navbar from "../components/Navbar";
+import PageHeader from "../components/PageHeader";
+import Card from "../components/Card";
+import Button from "../components/Button";
+import EmptyState from "../components/EmptyState";
+
+export default function Messages() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [conversations, setConversations] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [err, setErr] = useState("");
+
+  // --- New State for "New Message" Modal ---
+  const [showNewMessageModal, setShowNewMessageModal] = useState(false);
+  const [allMembers, setAllMembers] = useState([]);
+  const [memberSearch, setMemberSearch] = useState("");
+  // ------------------------------------------
+
+  useEffect(() => {
+    const u = JSON.parse(localStorage.getItem("user"));
+    if (!u) {
+      navigate("/login");
+      return;
+    }
+    setUser(u);
+  }, [navigate]);
+
+  // --- Modified useEffect to fetch members too ---
+  useEffect(() => {
+    if (!user) return;
+
+    const loadData = async () => {
+      try {
+        setLoading(true);
+        // Fetch both conversations and all members
+        const [convoRes, memberRes] = await Promise.all([
+          axios.get(`http://localhost:5000/api/messages/conversations/${user.id}`),
+          axios.get(`http://localhost:5000/api/clubs/${user.club_id}/members`)
+        ]);
+        
+        setConversations(convoRes.data.conversations || []);
+        
+        // Filter out the logged-in user from the "all members" list
+        setAllMembers(
+          (memberRes.data.members || []).filter(m => m.id !== user.id)
+        );
+
+      } catch (e) {
+        setErr("Failed to load messages or members.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadData();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user?.id]);
+  // -----------------------------------------------
+
+  const isUnread = (convo) => {
+    return convo.status === 0 && convo.receiver_id === user?.id;
+  };
+
+  // Helper to format message time
+  const formatMessageTime = (timestamp) => {
+    const date = new Date(timestamp);
+    const now = new Date();
+    const diffMs = now - date;
+    const diffMins = Math.floor(diffMs / 60000);
+    const diffHours = Math.floor(diffMs / 3600000);
+    const diffDays = Math.floor(diffMs / 86400000);
+
+    if (diffMins < 1) return 'Just now';
+    if (diffMins < 60) return `${diffMins}m ago`;
+    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffDays < 7) return `${diffDays}d ago`;
+    return date.toLocaleDateString();
+  };
+
+  // Memoized filter for the member search
+  const filteredMembers = useMemo(() => {
+    if (!memberSearch) return allMembers;
+    const term = memberSearch.toLowerCase();
+    return allMembers.filter(m => 
+      m.name.toLowerCase().includes(term) || 
+      m.email.toLowerCase().includes(term)
+    );
+  }, [allMembers, memberSearch]);
+
+  return (
+    <div className="min-h-screen bg-gray-100">
+      <header className="bg-green-600 text-white px-4 py-4 flex items-center justify-between sticky top-0 z-20 shadow">
+        <button
+          onClick={() => navigate("/dashboard")} // Go to dashboard
+          className="p-2 rounded hover:bg-green-500"
+          aria-label="Back"
+        >
+          <FiArrowLeft className="w-6 h-6" />
+        </button>
+        <h1 className="text-xl font-bold">Messages</h1>
+        
+        {/* --- "New Message" Button --- */}
+        <button
+           onClick={() => setShowNewMessageModal(true)} // Open modal
+           className="p-2 rounded hover:bg-green-500"
+           aria-label="New Message"
+        >
+          <FiPlus className="w-6 h-6" />
+        </button>
+        {/* --------------------------- */}
+      </header>
+
+      <main className="max-w-2xl mx-auto p-4">
+        {/* ... (rest of the component: loading, error, empty state) ... */}
+        {loading && <div className="text-center p-8">Loading...</div>}
+        {err && <div className="p-3 bg-red-100 text-red-700 rounded">{err}</div>}
+        
+        {!loading && conversations.length === 0 && !showNewMessageModal && (
+          <div className="text-center p-8 bg-white rounded shadow">
+            <FiMail className="w-12 h-12 mx-auto text-gray-400" />
+            <h3 className="mt-2 text-lg font-semibold">No messages</h3>
+            <p className="text-gray-500">Start a conversation from a member's profile or click '+' to start a new one.</p>
+          </div>
+        )}
+
+        {/* --- Conversation List --- */}
+        <div className="space-y-3">
+          {conversations.map((convo) => (
+            <Link
+              key={convo.id}
+              to={`/messages/${convo.partner_id}`}
+              className={`block p-4 bg-white rounded shadow hover:shadow-md ${isUnread(convo) ? "border-l-4 border-green-500" : ""}`}
+            >
+              <div className="flex items-center gap-3">
+                <img
+                  src={getImageUrl(convo.partner_photo)}
+                  alt={convo.partner_name}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+                <div className="flex-1 min-w-0">
+                  <div className="flex justify-between items-center">
+                    <h4 className="font-semibold truncate">{convo.partner_name}</h4>
+                    <span className="text-xs text-gray-400">
+                      {new Date(convo.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+                  <p className={`text-sm text-gray-600 truncate ${isUnread(convo) ? "font-bold" : ""}`}>
+                    {convo.sender_id === user?.id && "You: "}
+                    {convo.message}
+                  </p>
+                </div>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </main>
+
+      {/* --- NEW MESSAGE MODAL --- */}
+      {showNewMessageModal && (
+        <div className="fixed inset-0 bg-black/50 z-40 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-md max-h-[70vh] flex flex-col">
+            {/* Modal Header */}
+            <div className="flex justify-between items-center p-4 border-b">
+              <h2 className="text-lg font-semibold">New Message</h2>
+              <button onClick={() => setShowNewMessageModal(false)} className="p-1 rounded-full hover:bg-gray-100">
+                <FiX className="w-5 h-5" />
+              </button>
+            </div>
+            
+            {/* Search Bar */}
+            <div className="p-4 border-b">
+              <div className="relative">
+                <FiSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+                <input 
+                  type="text"
+                  placeholder="Search members..."
+                  value={memberSearch}
+                  onChange={(e) => setMemberSearch(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border rounded-full bg-gray-50"
+                />
+              </div>
+            </div>
+
+            {/* Member List */}
+            <div className="overflow-y-auto">
+              {filteredMembers.length === 0 ? (
+                <p className="p-4 text-center text-gray-500">No members found.</p>
+              ) : (
+                <ul className="divide-y">
+                  {filteredMembers.map(member => (
+                    <li key={member.id}>
+                      <button 
+                        onClick={() => {
+                          setShowNewMessageModal(false);
+                          navigate(`/messages/${member.id}`);
+                        }}
+                        className="w-full flex items-center gap-3 p-3 hover:bg-gray-50"
+                      >
+                        <img src={getImageUrl(member.photo)} alt={member.name} className="w-10 h-10 rounded-full object-cover" />
+                        <div>
+                          <div className="font-medium text-left">{member.name}</div>
+                          <div className="text-sm text-gray-500 text-left">{member.email}</div>
+                        </div>
+                      </button>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+      {/* --- END MODAL --- */}
+    </div>
+  );
+}

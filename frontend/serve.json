@@ -1,0 +1,7 @@
+{
+  "listen": 3001,
+  "cleanUrls": true,
+  "rewrites": [
+    { "source": "**", "destination": "/index.html" }
+  ]
+}

@@ -1,0 +1,1224 @@
+-- phpMyAdmin SQL Dump
+-- version 5.2.1
+-- https://www.phpmyadmin.net/
+--
+-- Host: localhost
+-- Generation Time: Jan 12, 2026 at 12:37 AM
+-- Server version: 10.4.32-MariaDB
+-- PHP Version: 8.2.12
+
+SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
+START TRANSACTION;
+SET time_zone = "+00:00";
+
+
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+
+--
+-- Database: `cms`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `administrative_announcements`
+--
+
+CREATE TABLE `administrative_announcements` (
+  `id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `message` text NOT NULL,
+  `type` enum('event','club_creation','general','urgent') NOT NULL DEFAULT 'general',
+  `target_audience` enum('all_clubs','specific_clubs','all_students') NOT NULL DEFAULT 'all_clubs',
+  `created_by` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `is_active` tinyint(1) NOT NULL DEFAULT 1
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `administrative_announcements`
+--
+
+INSERT INTO `administrative_announcements` (`id`, `title`, `message`, `type`, `target_audience`, `created_by`, `created_at`, `updated_at`, `is_active`) VALUES
+(1, 'Welcome to Club Management System', 'This is the administrative announcement system. Authority users can create announcements for all clubs and students.', 'general', 'all_clubs', 1, '2026-01-11 22:11:45', '2026-01-11 22:11:45', 1);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `admin_announcement_clubs`
+--
+
+CREATE TABLE `admin_announcement_clubs` (
+  `id` int(11) NOT NULL,
+  `announcement_id` int(11) NOT NULL,
+  `club_id` int(11) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `announcements`
+--
+
+CREATE TABLE `announcements` (
+  `id` int(11) NOT NULL,
+  `club_id` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `created_by` int(11) NOT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `announcements`
+--
+
+INSERT INTO `announcements` (`id`, `club_id`, `message`, `created_by`, `created_at`) VALUES
+(2, 14, 'Club recruitment will start soon. Get ready', 9, '2025-11-01 21:21:10'),
+(3, 14, 'This announcement was modified from authority role user!!', 9, '2025-11-01 21:45:16'),
+(5, 14, 'Club recruitment will start soon. Get ready!!', 9, '2025-11-01 21:45:33'),
+(6, 14, 'Club recruitment will start on December 3rd. Be ready and dont miss your chance!!', 9, '2025-11-15 19:21:01'),
+(7, 18, 'We are ready to recruit new members for new batches in this january , wait for the announcement. this opportunity for 18th, 19th batch only.', 66, '2026-01-02 17:49:49');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `authority_users`
+--
+
+CREATE TABLE `authority_users` (
+  `id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `photo` varchar(255) DEFAULT NULL,
+  `contact_no` varchar(50) DEFAULT NULL,
+  `designation` varchar(100) DEFAULT 'Administrator',
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `last_login` timestamp NULL DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `authority_users`
+--
+
+INSERT INTO `authority_users` (`id`, `name`, `email`, `password`, `photo`, `contact_no`, `designation`, `created_at`, `last_login`) VALUES
+(1, 'System Administrator', 'authority@admin.com', '$2b$10$pyLfNihL7ZQSLn59JyB6F.jPtKKYmyv6d4d7yX84P1937OYRHqX9S', NULL, NULL, 'Chief Administrator', '2026-01-11 22:11:45', '2026-01-11 22:25:04');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `clubs`
+--
+
+CREATE TABLE `clubs` (
+  `id` int(11) NOT NULL,
+  `name` varchar(150) NOT NULL,
+  `description` text DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `clubs`
+--
+
+INSERT INTO `clubs` (`id`, `name`, `description`, `created_at`) VALUES
+(10, 'SDC- Skill Development Club JKKNIU', 'A skill based work on passionate field.', '2025-09-07 01:21:33'),
+(11, 'Sports Club', 'A club for sports', '2025-09-07 02:14:54'),
+(12, 'Business Club Jkkniu', 'A community for students passionate about besiness related work and goal', '2025-09-07 02:44:16'),
+(13, 'Mid Day Programming Club of JKKNIU', 'A community of coding enthusiasts who meet during lunch hours to collaborate, learn, and work on projects. It’s a space for coding challenges, tutorials, and skill-building.', '2025-09-07 04:26:45'),
+(14, 'JKKNIU Cyber Security Club', 'JKKNIU Cyber Security Club (জাতীয় কবি কাজী নজরুল ইসলাম বিশ্ববিদ্যালয় সাইবার সিকিউরিটি ক্লাব) হলো\nযে ক্লাবটি ডিজিটাল নিরাপত্তা, সাইবার সিকিউরিটি সচেতনতা ও দক্ষতা উন্নয়নের জন্য বিশ্ববিদ্যালয়‑ভিত্তিকভাবে কাজ করে।\nএই ক্লাবের প্রধান লক্ষ্য হলো ছাত্র‑ছাত্রীদের সাইবার নিরাপত্তা সম্পর্কে জানানো, প্র্যাকটিক্যাল স্কিল শেখানো এবং সেই দক্ষতা দিয়ে অনলাইন ঝুঁকি মোকাবিলা করার ক্ষমতা তৈরি করা', '2025-09-07 04:28:00'),
+(15, 'JKKNIU singers Club', 'a club based on jkkniu student for performing myth and folk song', '2025-09-07 05:28:21'),
+(16, 'JKKNIU Career Club', 'a Career based helping club for helping student to growth career', '2025-09-09 05:43:07'),
+(17, 'Rotaract Club', 'Expanding professional networks , exchanging ideas with leaders and cultivating lifelong friendships around the world', '2025-09-09 06:40:25'),
+(18, 'Confident Minds Club at JKKNIU', 'Confident Minds Club at JKKNIU is a student-led organization dedicated to personal growth, mental resilience, and self-confidence development.\nThe club creates a safe and supportive environment where students can freely express ideas, share experiences, and grow together.\nIt focuses on building leadership skills, emotional intelligence, and effective communication among members.\nThrough workshops, seminars, and interactive sessions, the club helps students overcome fear, stress, and self-doubt.\nConfident Minds Club actively promotes mental well-being and positive thinking on campus.\nIt encourages students to step out of their comfort zones and discover their true potential.\nThe club regularly organizes motivational talks, group discussions, and skill-building activities.\nMembers are inspired to support one another and develop a strong sense of community.\nThe club believes that confidence is a skill that can be learned and strengthened over time.\nConfident Minds Club at JKKNIU strives to shape empowered, mindful, and future-ready individuals.', '2025-09-09 06:44:39'),
+(19, 'EEE club at JKKNIU', 'A EEE student based comunity for the student who is passionate a circuit , electronic devices and others.', '2025-09-09 06:47:21'),
+(20, 'JKKNIU Management Club', '\"Empowering Leaders , Inspiring Growth\"\nThis reflects the clubs focus on developing leadership skills and fostering personal and professional Growth.', '2025-09-09 06:50:09');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `club_members`
+--
+
+CREATE TABLE `club_members` (
+  `id` int(11) NOT NULL,
+  `club_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('member','admin','authority') NOT NULL DEFAULT 'member',
+  `description` text DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL,
+  `contact_no` varchar(255) DEFAULT NULL,
+  `gender` enum('male','female') DEFAULT NULL,
+  `dept` varchar(255) DEFAULT NULL,
+  `session` varchar(50) DEFAULT NULL,
+  `joined_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `position` varchar(50) DEFAULT 'member',
+  `reset_token` varchar(255) DEFAULT NULL,
+  `reset_token_expires` datetime DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `club_members`
+--
+
+INSERT INTO `club_members` (`id`, `club_id`, `name`, `email`, `password`, `role`, `description`, `photo`, `contact_no`, `gender`, `dept`, `session`, `joined_at`, `position`, `reset_token`, `reset_token_expires`) VALUES
+(183, 14, 'Abul Bashar Abir', 'abir@mail.com', '$2b$10$vhNis02vziXrp5lKYgYGVO9gRsfJjIIUwpZVf/sBR6P0YfokYdRfi', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:12', 'Joint Secretary', NULL, NULL),
+(1, 11, 'admin', 'admin@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'authority', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-07 01:45:06', 'member', NULL, NULL),
+(48, 16, 'Md. afjal Hossain', 'afjal@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:01', 'Executive Member', NULL, NULL),
+(164, 14, 'asif hasan plabon', 'ahp007@gmail.com', '$2b$10$5nkZNcj0vDF32wdnZeaCm.zWhHb42aXxTMjh9ecwdlbc2SXCOsbPe', 'member', 'My Profile', '1767899739790-425890302.png', '01873081248', 'male', 'CSE', '2020-21', '2025-11-16 16:17:26', 'member', NULL, NULL),
+(54, 14, 'akib hasan', 'akib@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'A cyber security hacker for better country\r\n', '1757398311886-422165693.jpeg', '01578254578', 'male', 'EEE', '2020-21', '2025-09-09 06:11:20', 'member', NULL, NULL),
+(200, 14, 'Md. Akib Bhuiyan', 'akib@mail.com', '$2b$10$2.lSRJ6xP/019ornTtrO8OM76OMfqtZaOtoGyy.7onS791dGlLAdm', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:15', 'member', NULL, NULL),
+(68, 19, 'alamin hossain', 'Alamin@eee.club', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:47:21', 'President', NULL, NULL),
+(21, 10, 'Alice Rahman', 'alice@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Passionate about career development and mentoring peers.', 'alice.jpg', '01712345678', 'female', 'CSE', '2019-20', '2025-09-08 02:37:59', 'Member', NULL, NULL),
+(171, 20, 'Andy', 'andy@mail.com', '$2b$10$nIWOLfXeSUzR9M4Xvbk8cOmDedyd5alBpmSD8.Y4mAytdF/bdbfIq', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-08 18:41:13', 'member', NULL, NULL),
+(134, 13, 'Anika', 'anika56@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:05', 'member', NULL, NULL),
+(202, 14, 'Alnor Antor', 'antor@mail.com', '$2b$10$gNPupeAlBSEn13PACDZsgOn6Nl8ULrU3s3bLak43FV8FmYdmCh9f6', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:16', 'Media & PR', NULL, NULL),
+(36, 14, 'arafat', 'arafat@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 01:56:17', 'member', NULL, NULL),
+(194, 14, 'Easir Arafat', 'arafat@mail.com', '$2b$10$UkQBf7O2dKv52UpJJMjBRuEjiN7K3UeYjHNr4x347YLDGvdqcQhK6', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:14', 'member', NULL, NULL),
+(128, 13, 'Arif', 'arif20@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:04', 'member', NULL, NULL),
+(141, 17, 'Arif', 'arif75@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:41:36', 'member', NULL, NULL),
+(57, 13, 'Arif Hasan', 'arif@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:32:46', 'member', NULL, NULL),
+(199, 14, 'Arman Mia', 'arman@mail.com', '$2b$10$9av7XkXyrvkwBvkh/D1ajem/cpFsNR.7FBUXWDm7mB/vddk7N1GmC', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:15', 'Event Coordinator', NULL, NULL),
+(66, 18, 'Ashari Binte Ashraf', 'ashari@confident.club', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', 'A learner', '1767376375410-969719057.jpg', '01873081248', 'male', 'CSE', '2021-22', '2025-09-09 06:44:39', 'President', NULL, NULL),
+(38, 14, 'Ashari Binte Ashraf', 'ashari@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'a security based coder', '1757478587164-156083151.jpg', '01635478955', 'female', 'Public Admisitration', '2021-22', '2025-09-09 01:56:19', 'Executive Member', NULL, NULL),
+(195, 14, 'Ashari', 'ashari@mail.com', '$2b$10$RoS2jyFlRJoHc.blWIB63OBMb82dLWYBfC0aLc7tkyFDVYT.3Ti4W', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:14', 'member', NULL, NULL),
+(43, 16, 'Md ashraful Islam', 'ashraful@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:00', 'Organizing Secretary', NULL, NULL),
+(113, 11, 'asif ', 'asif@asif.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:33', 'member', NULL, NULL),
+(6, 11, 'asif', 'asif@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-07 02:51:54', NULL, NULL, NULL),
+(217, 13, 'Avishek Sarker', 'avishek@mail.com', '$2b$10$gQBIhtONKHhW.89h663cyeI8JV3nD4VjJP3Klf80hozkHnjp0hKZa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 19:42:09', 'Vice President', NULL, NULL),
+(201, 14, 'Avishek Sarker', 'avishek@mail.com', '$2b$10$5cViLspkE0in/x5KOxVqv.UwiJXqchthc658SaGyBN4Pvb1qX8yWW', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:15', 'Treasurer', NULL, NULL),
+(18, 14, 'Ayesha Siddiqua', 'ayesha@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Conducts cybersecurity awareness workshops.', '1757393956722-263177135.jpg', '01833445566', 'female', 'EEE', '2022-23', '2025-09-08 02:37:59', 'member', NULL, NULL),
+(63, 13, 'Md Abu Omayer Babu', 'babu@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:32:47', 'member', NULL, NULL),
+(40, 16, 'Abul Absar Bappy', 'bappy@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:43:07', 'President', NULL, NULL),
+(187, 14, 'Mehedi Hasan Bissash', 'bissash@mail.com', '$2b$10$VXj/KfPt2Qpt69cTjZotVu8VAiiGpKK2/3OyjnnPWtDOG.VAgiAwK', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:13', 'member', NULL, NULL),
+(110, 11, 'Bristy', 'bristy77@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:32', 'member', NULL, NULL),
+(136, 17, 'Elma', 'elma78@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:41:35', 'member', NULL, NULL),
+(158, 20, 'Elma', 'elma90@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:01', 'member', NULL, NULL),
+(203, 14, 'Md. Emran', 'emran@mail.com', '$2b$10$9QGgX2RvV6211L3cmVHyRe4XhFZj05.9GzayewKyBeexdiP.4sjA.', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:16', 'member', NULL, NULL),
+(181, 14, 'Era', 'era@mail.com', '$2b$10$0pOVmiTOm6nluCyl36K41.T.TpRTwaxjdKeWYlU0mfda494ixWF82', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:12', 'member', NULL, NULL),
+(42, 16, 'Tahmida Eti', 'eti@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:53:59', 'member', NULL, NULL),
+(31, 13, 'fahad', 'fahad@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 04:11:08', 'member', NULL, NULL),
+(188, 14, 'Fahad', 'fahad@mail.com', '$2b$10$cwvlj.QNy0AlLTfJ2uu2AOCWa1XG/6H7BiJIu5u10FpJUTQjXYSS2', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:13', 'member', NULL, NULL),
+(122, 15, 'Fahim', 'fahim36@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:12', 'General Secretary', NULL, NULL),
+(22, 10, 'Fahim Karim', 'fahim@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Helps organize career seminars and workshops.', 'fahim.jpg', '01898765432', 'male', 'BBA', '2020-21', '2025-09-08 02:37:59', 'President', NULL, NULL),
+(94, 18, 'Farzana', 'farzana35@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:59', 'Joint Secretary', NULL, NULL),
+(118, 15, 'Farzana', 'farzana43@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:11', 'Vice President', NULL, NULL),
+(150, 19, 'Farzana', 'farzana53@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:19', 'Vice President', NULL, NULL),
+(34, 13, 'Farzana Afroz', 'farzana@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 04:11:10', 'member', NULL, NULL),
+(208, 13, 'Farzana Afroz', 'farzana@mail.com', '$2b$10$pJhDN0CP.QPTYbogSTBQOOvOsgoanuJ7sdNh9LajrIYw2ENvaf7Lu', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:45:17', 'member', NULL, NULL),
+(174, 14, 'Farzana Afroz', 'farzana@mail.com', '$2b$10$7G.TUGylxsPQOFGjvqJ4ke6XBfZYr6tQmILregDvazfuJIPC4ZvEu', 'member', 'A learner ', '1767904768951-90701872.png', '01333221122', 'female', 'Computer Science and Engineering', '2020-21', '2026-01-08 19:08:17', 'member', NULL, NULL),
+(172, 18, 'Farzana Afroz', 'farzana@mail.com', '$2b$10$XnvDBB72vKuTTH6wHK0zduYocywyaXWw56iPGTadVyjJotsS70dp6', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-08 18:48:05', 'member', NULL, NULL),
+(56, 13, 'Hasan Arif', 'h.arif@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:32:46', 'member', NULL, NULL),
+(45, 16, 'Habibur rahman', 'habib@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:00', 'Executive Member', NULL, NULL),
+(147, 19, 'Hasan', 'hasan30@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:19', 'Vice President', NULL, NULL),
+(92, 16, 'Hasan', 'hasan41@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:28', 'member', NULL, NULL),
+(95, 18, 'Hasan', 'hasan76@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:00', 'member', NULL, NULL),
+(13, 14, ' Asif hasan', 'hasan@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'A Learner of this Field', '1757229557061-827626940.jpg', '01873021457', 'male', 'Economics', '2020-21', '2025-09-07 05:28:55', 'Organizing Secretary', NULL, NULL),
+(19, 15, 'Hasan Mahmud', 'hasan@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Performs folk and modern songs in events.', 'hasan.jpg', '01944556677', 'male', 'Music', '2021-22', '2025-09-08 02:37:59', 'member', NULL, NULL),
+(197, 14, 'Ifroem Rema', 'ifro@mail.com', '$2b$10$OwEh7JXaz9qC9WRasaGLcOYT4HaemIsPYGs4SzoF9r0wJ0AV6qdxi', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:14', 'member', NULL, NULL),
+(79, 14, 'Imran', 'imran25@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:06', 'member', NULL, NULL),
+(153, 20, 'Imran', 'imran42@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:00', 'member', NULL, NULL),
+(46, 16, 'Jamal Hossain', 'jamal@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:00', 'Executive Member', NULL, NULL),
+(71, 20, 'Jamal Hossain', 'jamal@management.club', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', 'A knowledge enthorist for learning from the world', '1768073095856-372622011.png', '01876987678', 'male', 'Management', '2018-19', '2025-09-09 06:50:09', 'General Secretary', NULL, NULL),
+(149, 19, 'Jannat', 'jannat33@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:19', 'Treasurer', NULL, NULL),
+(204, 14, 'Jarif', 'jarif@mail.com', '$2b$10$IBret4xkOsfIdrMC2kE23epedO3twO2afh237lpn2xMZiMv9RLhOm', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:16', 'member', NULL, NULL),
+(47, 16, 'Jillo jitu', 'jitu@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:01', 'Media & PR', NULL, NULL),
+(83, 14, 'Joy Deb', 'joydeb@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:06', 'member', NULL, NULL),
+(120, 15, 'Labib', 'labib22@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:12', 'Treasurer', NULL, NULL),
+(124, 15, 'Labib', 'labib52@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:13', 'Joint Secretary', NULL, NULL),
+(93, 16, 'Labib', 'labib65@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:28', 'member', NULL, NULL),
+(33, 13, 'Lamia Akter', 'lamia@gamil.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 04:11:09', 'member', NULL, NULL),
+(177, 14, 'lamia', 'lamia@mail.com', '$2b$10$m8G6POi.eKp8.A16Jw4SWOdz5ZkbsInt946LHPlTtYW50PPmCKej6', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:11', 'member', NULL, NULL),
+(140, 17, 'Lamisa', 'lamisa11@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:41:36', 'member', NULL, NULL),
+(107, 11, 'Lamisa', 'lamisa81@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:32', 'member', NULL, NULL),
+(17, 14, 'Mahmudul Hasan', 'mahmud@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Interested in ethical hacking and network defense.', 'mahmud.jpg', '01388990011', 'male', 'CSE', '2023-24', '2025-09-08 02:37:59', 'member', NULL, NULL),
+(157, 20, 'Maliha', 'maliha63@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:01', 'Executive Member', NULL, NULL),
+(73, 14, 'Maliha', 'maliha65@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:05', 'member', NULL, NULL),
+(90, 16, 'Mamun', 'mamun64@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:27', 'member', NULL, NULL),
+(74, 14, 'Mamun', 'mamun94@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:05', 'member', NULL, NULL),
+(61, 13, 'Maruf', 'maruff@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:32:46', 'member', NULL, NULL),
+(10, 14, 'Mayeen Ahmed', 'mayeen@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', 'a deep seek coder', '1757478379380-220233878.jpg', '01873021457', 'male', 'History', '2020-21', '2025-09-07 04:28:00', 'member', NULL, NULL),
+(24, 14, 'mehedi', 'mehedi@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'a cyber security specialist for this varsity', '1757397594223-53703991.jpg', '01873021457', 'male', 'CSE', '2020-21', '2025-09-08 03:36:33', 'member', NULL, NULL),
+(135, 17, 'Mim', 'mim33@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:41:35', 'member', NULL, NULL),
+(112, 11, 'Mim', 'mim67@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:33', 'member', NULL, NULL),
+(108, 11, 'Mim', 'mim74@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:32', 'member', NULL, NULL),
+(130, 13, 'Mizan', 'mizan61@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:04', 'member', NULL, NULL),
+(41, 16, 'Momen Ahammad', 'momen@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:43:07', 'General Secretary', NULL, NULL),
+(91, 16, 'Monir', 'monir40@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:28', 'member', NULL, NULL),
+(155, 20, 'Monir', 'monir49@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:01', 'member', NULL, NULL),
+(189, 14, 'Monisha Akter', 'monisha@mail.com', '$2b$10$C.bdaGYleZrOAOx1IT/gbOielgX.axvCJWPkKAZIeMP/ezjnsw1UC', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:13', 'member', NULL, NULL),
+(37, 14, 'Mridula Rahman', 'mridula@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'a active coder', '1757478443689-261301706.jpg', '01658725863', 'female', 'EEE', '2022-23', '2025-09-09 01:56:18', 'member', NULL, NULL),
+(198, 14, 'Mridula Rahman', 'mridula@mail.com', '$2b$10$9hEF46hFASdsWfs.7DLltexWIoxHPR1u/a44bARLjjD9mzBJXeW4G', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:15', 'member', NULL, NULL),
+(64, 17, 'Md. Mukitul Islam', 'mukitul@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:40:25', 'president', NULL, NULL),
+(32, 13, 'Nabeel', 'nabeel@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 04:11:08', 'member', NULL, NULL),
+(211, 13, 'Nabeel Ahsan', 'nabeel@mail.com', '$2b$10$4IKTGOIVEK6Ed2YBTp67m.ayQof/IVU7NvKFhyCXqVYDpYjFGKsBO', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 19:34:05', 'President', NULL, NULL),
+(182, 14, 'Nabeel', 'nabeel@mail.com', '$2b$10$QT4yqQHKm5WYRXjwgUjuxuKnTeCEtLiclQNgHx6CLbOeOjZT94EO2', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:12', 'member', NULL, NULL),
+(52, 16, 'Nadia Sultana', 'nadia@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:02', 'Joint Secretary', NULL, NULL),
+(49, 16, 'kh naeem', 'naeem@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:01', 'Treasurer', NULL, NULL),
+(131, 13, 'Nazia', 'nazia32@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:04', 'member', NULL, NULL),
+(143, 19, 'Nazia', 'nazia73@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:18', 'Joint Secretary', NULL, NULL),
+(209, 14, 'Nibir Tarafder', 'nibir@mail.com', '$2b$10$SxZosxhddzeNIccDRSX1EuAPBxmOHXQ3BnJqcf55nZiVfSPV6.WzW', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 19:02:29', 'member', NULL, NULL),
+(70, 20, 'Md. Nizam Uddin', 'nizam@management.club', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:50:09', 'member', NULL, NULL),
+(193, 14, 'Noornabi Noor', 'noornabi@mail.com', '$2b$10$2A9Wc.W0rBXb9kQcSxjiWe9O4esIilGZp5BdcL8imK8e4Uz8R8Neu', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:14', 'member', NULL, NULL),
+(81, 14, 'Nusrat', 'nusrat44@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:06', 'member', NULL, NULL),
+(119, 15, 'Nusrat', 'nusrat45@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:12', 'member', NULL, NULL),
+(105, 11, 'Nusrat', 'nusrat83@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:31', 'member', NULL, NULL),
+(23, 11, 'Nusrat Jahan', 'nusrat@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Active sports enthusiast participating in cricket & football.', 'nusrat.jpg', '01922334455', 'female', 'Physical Education', '2021-22', '2025-09-08 02:37:59', 'member', NULL, NULL),
+(7, 13, 'Omayer Hossen', 'omayer@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'A passonate person in programming', '1757351044100-150988025.jpg', ' 01875252545', 'male', 'CSE', '2021-22', '2025-09-07 04:26:45', 'Executive Member', NULL, NULL),
+(85, 16, 'Parvez', 'parvez21@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:26', 'member', NULL, NULL),
+(138, 17, 'Parvez', 'parvez31@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:41:36', 'member', NULL, NULL),
+(160, 20, 'Parvez', 'parvez91@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:02', 'Media & PR', NULL, NULL),
+(53, 16, 'peal saha', 'peal@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:02', 'member', NULL, NULL),
+(29, 13, 'prantick', 'prantick@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'a person passoinete at study', '1757468655534-299699707.jpeg', '01875456585', 'male', 'CSE', '2020-21', '2025-09-08 04:11:06', 'Treasurer', NULL, NULL),
+(207, 13, 'Prantick Paul', 'prantick@mail.com', '$2b$10$jj7u2.hUSBfEOKg130LiU.nBWdXbhd7PYDXEJn4CCI1AeQ50UOUfm', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:45:17', 'member', NULL, NULL),
+(173, 14, 'Prantick Paul', 'prantick@mail.com', '$2b$10$nTlBVjoIzpPIKwRytsZHZu2mAKRFUyN.PqOLz9AdETO9tu2Ajegqa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-08 19:08:16', 'member', NULL, NULL),
+(2, 11, 'pers', 'president@gmai.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-07 02:14:54', 'president', NULL, NULL),
+(77, 14, 'Pritom', 'pritom48@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:05', 'member', NULL, NULL),
+(80, 14, 'Priya', 'priya19@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:06', 'member', NULL, NULL),
+(137, 17, 'Priya', 'priya80@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:41:35', 'member', NULL, NULL),
+(151, 19, 'Rafi', 'rafi28@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:20', 'Joint Secretary', NULL, NULL),
+(156, 20, 'Rafi', 'rafi92@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:01', 'Treasurer', NULL, NULL),
+(25, 14, 'rafi', 'rafi@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'a Security Specialist', '1757477968942-547630122.jpeg', '01873021457', 'male', 'Fine Arts', '2021-22', '2025-09-08 03:36:34', 'member', NULL, NULL),
+(186, 14, 'Rafi Hossen', 'rafi@mail.com', '$2b$10$cb5kVbuWao6vUSotx6ldOu3y6x9M.DN6ELiU24Ljq6WzriOOF3pXq', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:13', 'member', NULL, NULL),
+(35, 14, 'raful mia', 'raful@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'a Cyber Security Enthusist', '1757397529111-26774010.jpg', '01875326589', 'male', '', '2020-21', '2025-09-08 17:21:40', 'member', NULL, NULL),
+(205, 13, 'Raful Mia', 'raful@mail.com', '$2b$10$DALO10pqas02Ow90ydcdmeRFLKE3nVcblZ6IObCZKi3A2tpCzOU3S', 'member', 'A learner', '1768070941800-490732156.jpg', '01345231234', 'male', 'CSE', '2020-21', '2026-01-10 18:45:16', 'member', NULL, NULL),
+(176, 14, 'Raful Mia', 'raful@mail.com', '$2b$10$Q8978wc8OrgAyemngMGbDehlZ3.KJ62o4TFo/26Nb9moJyYxvaGp2', 'member', 'A learner', '1768070941800-490732156.jpg', '01345231234', 'male', 'CSE', '2020-21', '2026-01-08 20:54:13', 'member', NULL, NULL),
+(133, 13, 'Rakib', 'rakib82@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:05', 'member', NULL, NULL),
+(14, 11, 'Rakib Hasan', 'rakib@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', 'Leading the sports events and inter-university tournaments.', 'rakib.jpg', '01611223344', 'male', 'Management', '2020-21', '2025-09-08 02:37:59', 'Captain', NULL, NULL),
+(75, 14, 'Rini', 'rini46@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:05', 'member', NULL, NULL),
+(121, 15, 'Rizwan', 'rizwan14@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:12', 'member', NULL, NULL),
+(117, 15, 'Rizwan', 'rizwan87@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:11', 'member', NULL, NULL),
+(20, 15, 'Rumi Akter', 'rumi@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Leads practice sessions and manages stage performances.', 'rumi.jpg', '01799887766', 'female', 'Fine Arts', '2020-21', '2025-09-08 02:37:59', 'member', NULL, NULL),
+(89, 16, 'Rupom', 'rupom86@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:27', 'member', NULL, NULL),
+(154, 20, 'Rupom', 'rupom98@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:01', 'member', NULL, NULL),
+(109, 11, 'Sabbina', 'sabbina68@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:32', 'member', NULL, NULL),
+(116, 15, 'Sabbina', 'sabbina97@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:11', 'member', NULL, NULL),
+(145, 19, 'Sabbir', 'sabbir16@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:18', 'Organizing Secretary', NULL, NULL),
+(142, 17, 'Sabbir', 'sabbir60@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:41:36', 'member', NULL, NULL),
+(76, 14, 'Sadia', 'sadia15@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:05', 'member', NULL, NULL),
+(106, 11, 'Sadia', 'sadia18@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:32', 'member', NULL, NULL),
+(72, 14, 'Sadia', 'sadia22@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:04', 'member', NULL, NULL),
+(152, 19, 'Sadia', 'sadia88@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:20', 'Media & PR', NULL, NULL),
+(60, 13, 'Sadman Ishtiak', 'sadman@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:32:46', 'member', NULL, NULL),
+(62, 13, 'Shafin Ahmed', 'safin@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:32:47', 'member', NULL, NULL),
+(98, 18, 'Saiful', 'saiful47@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:00', 'Treasurer', NULL, NULL),
+(82, 14, 'Saiful', 'saiful7@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:06', 'member', NULL, NULL),
+(125, 13, 'Saiful', 'saiful8@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:03', 'member', NULL, NULL),
+(50, 16, 'md saiful Islam', 'saiful@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:01', 'member', NULL, NULL),
+(180, 14, 'Saikat', 'saikat@mail.com', '$2b$10$w8uQoUwqwKy9INWtpd2IuO6Q.L5QEP6E1S6rpgX84JdvSEtaWzEBC', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:11', 'member', NULL, NULL),
+(111, 11, 'Sajid', 'sajid23@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:33', 'member', NULL, NULL),
+(16, 13, 'Samira Akter', 'samira@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Organizes coding tutorials and lunchtime coding sessions.', 'samira.jpg', '01744556677', 'female', 'ICT', '2021-22', '2025-09-08 02:37:59', 'member', NULL, NULL),
+(51, 16, 'Md. sarwar hossain shihab', 'sarwar@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:01', 'member', NULL, NULL),
+(59, 13, 'Saurov Hasan', 'saurov@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:32:46', 'member', NULL, NULL),
+(3, 11, 'secretary', 'secretary@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-07 02:14:54', 'secretary', NULL, NULL),
+(26, 14, 'shagor', 'shagor@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', '', '1757398230770-887239564.jpeg', '', '', '', '', '2025-09-08 03:36:35', 'member', NULL, NULL),
+(185, 14, 'Shagor', 'shagor@mail.com', '$2b$10$gG.2Pi4uRBPN6oRRW6jt0O7sgiWv9j2kxMzB1kUeeOpk.DUOq4X9C', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:12', 'member', NULL, NULL),
+(27, 14, 'K.M. Sukateb Mehbub Saikat', 'shaikat@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'a Deep learner', '1757478294289-933665808.jpeg', '015245785', 'male', 'CSE', '2023-24', '2025-09-08 03:36:36', 'member', NULL, NULL),
+(100, 18, 'Shaila', 'shaila42@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:01', 'Vice President', NULL, NULL),
+(126, 13, 'Shaila', 'shaila96@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:03', 'member', NULL, NULL),
+(65, 17, 'Shakib al Hasan', 'shakib@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:40:25', 'secretary', NULL, NULL),
+(162, 14, 'Shameem Hasan', 'shameem@eee.club', '$2b$10$fzJyQ3MLcIWh1C9CW.i0MOUuOS/dyBc5UIXJfz6cKuZwUQZNRKWuS', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-11-02 17:55:57', 'member', NULL, NULL),
+(69, 19, 'Md. shameem ahmed', 'shameem@eee.club', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:47:21', 'General Secretary', NULL, NULL),
+(96, 18, 'Shamim', 'shamim50@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:00', 'General Secretary', NULL, NULL),
+(159, 20, 'Shamim', 'shamim88@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:02', 'Organizing Secretary', NULL, NULL),
+(86, 16, 'Shanto', 'shanto27@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:27', 'member', NULL, NULL),
+(99, 18, 'Shanto', 'shanto34@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:00', 'Event Coordinator', NULL, NULL),
+(103, 18, 'Shanto', 'shanto58@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:01', 'Executive Member', NULL, NULL),
+(139, 17, 'Sharmin', 'sharmin38@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:41:36', 'member', NULL, NULL),
+(87, 16, 'Sharmin', 'sharmin55@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:27', 'member', NULL, NULL),
+(8, 13, 'Shazid', 'shazid@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-07 04:26:45', 'member', NULL, NULL),
+(55, 14, 'Shazid Maruf', 'shazid@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:30:30', 'member', NULL, NULL),
+(144, 19, 'Shohag', 'shohag10@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:18', 'Event Coordinator', NULL, NULL),
+(104, 11, 'Shohag', 'shohag36@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:31', 'member', NULL, NULL),
+(161, 20, 'Shohag', 'shohag37@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:43:02', 'member', NULL, NULL),
+(78, 14, 'Shohag', 'shohag56@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:05', 'member', NULL, NULL),
+(146, 19, 'Shohag', 'shohag71@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:19', 'Executive Member', NULL, NULL),
+(101, 18, 'Shuvo', 'shuvo66@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:01', 'Joint Secretary', NULL, NULL),
+(97, 18, 'Shuvo', 'shuvo70@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:00', 'member', NULL, NULL),
+(115, 15, 'Sohag', 'sohag68@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:10', 'member', NULL, NULL),
+(129, 13, 'Sohag', 'sohag79@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:04', 'member', NULL, NULL),
+(39, 14, 'Naeem Hasan Shorol', 'sorol@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'a learner', '1757478177888-486918343.jpg', '01875456585', 'male', 'Management', '2020-21', '2025-09-09 01:56:21', 'member', NULL, NULL),
+(196, 14, 'Sorol', 'sorol@mail.com', '$2b$10$A.2QNkhDw1gVefD.psyrje2adgrGNO3o08WrKYXEZB1KnxsTHPuo.', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:14', 'member', NULL, NULL),
+(163, 14, 'Spondonnn', 'spondon.rema01@gmail.com', '$2b$10$Iarvupy4a5//5vLwQyJCUOjw6BeXcpRAHi3jVjIpvGlil4OUe7UpK', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-11-02 18:50:04', 'member', '6e7f6bc318d59ce10381921267f4a7684da1e9238250b213d21f3d2b161379d4', '2025-11-03 01:50:14'),
+(9, 14, 'Spondon Rema', 'spondon@mail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', 'a passionate for security', '1768072383933-431616841.jpg', '01873021457', 'male', 'CSE', '2020-21', '2025-09-07 04:28:00', 'President', NULL, NULL),
+(170, 20, 'Spondon Rema', 'spondon@mail.com', '$2b$10$Zyd/mju4gFIeTph5QMpbTOkiVGrdRFnIgFS1ju2I1LcVnkAk7vqnq', 'admin', 'a passionate for security', '1768072383933-431616841.jpg', '01873021457', 'male', 'CSE', '2020-21', '2026-01-08 18:41:12', 'President', NULL, NULL),
+(132, 13, 'Sultana', 'sultana84@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:05', 'member', NULL, NULL),
+(102, 18, 'Sumon', 'sumon27@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:35:01', 'member', NULL, NULL),
+(178, 14, 'Sumon', 'sumon@mail.com', '$2b$10$yUAhDty1AV7.HLEtpn27NOWfCRjefWdW.BOrfAIJTNTUrAk9lMhKC', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:11', 'member', NULL, NULL),
+(148, 19, 'Tahmid', 'tahmid29@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:42:19', 'member', NULL, NULL),
+(58, 13, 'Tamim Iqbal', 'tamim2@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:32:46', 'member', NULL, NULL),
+(210, 13, 'Saif Uddin Chaudhury Tamim', 'tamim@gmail.com', '$2b$10$8JUNVFL8bgi1Ttxp65TjZev8qlOfOFxk3xJqoHXlzHcis43UoUMwi', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 19:34:01', 'member', NULL, NULL),
+(12, 15, 'Tamim', 'Tamim@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-07 05:28:21', 'member', NULL, NULL),
+(206, 13, 'Saif Uddin Chaudhury Tamim', 'tamim@mail.com', '$2b$10$Ay/Fz/sABYRiFuEcwxFeAussJX8XDHAnUoIdJ2Lid7.TJgtQkMQAC', 'member', 'A passionate learner who always try to gain knowledge', '1768073482970-162240608.jpg', '01873080048', 'male', 'CSE', '2020-21', '2026-01-10 18:45:16', 'Organizing Secretary', NULL, NULL),
+(175, 14, 'Saif Uddin Chaudhury Tamim', 'tamim@mail.com', '$2b$10$5a3ZEFwCfkVbbxMur9MtDuNC2oyhncWGOLmgOcp8c1.yAIgNkGolW', 'member', 'A passionate learner who always try to gain knowledge', '1768073482970-162240608.jpg', '01873080048', 'male', 'CSE', '2020-21', '2026-01-08 20:54:11', 'Vice President', NULL, NULL),
+(216, 13, 'Tamjid Hossen', 'tamjid@mail.com', '$2b$10$yFukXrM6byrkh87Mn7wTfO2XpARBIxkdpImZ21HNp3zLYfI0CUf1W', 'admin', '---', '1768074454595-682156531.jpg', '01897654564', 'male', 'CSE', '2020-21', '2026-01-10 19:40:57', 'General Secretary', NULL, NULL),
+(192, 14, 'Tamjid Hossen', 'tamjid@mail.com', '$2b$10$LOmjjDE.fGMF4yaalysHbOyXwzFAuJBFs0TGw.rYoGttVhd9pEK4a', 'member', '---', '1768074454595-682156531.jpg', '01897654564', 'male', 'CSE', '2020-21', '2026-01-10 18:41:14', 'Vice President', NULL, NULL),
+(127, 13, 'Tania', 'tania62@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:39:03', 'member', NULL, NULL),
+(88, 16, 'Tanvir', 'tanvir26@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:27', 'member', NULL, NULL),
+(84, 16, 'Tanvir', 'tanvir37@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:34:26', 'member', NULL, NULL),
+(123, 15, 'Tanvir', 'tanvir73@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:38:12', 'member', NULL, NULL),
+(15, 13, 'Tanvir Alam', 'tanvir@jkkniu.edu.bd', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'Enjoys solving coding challenges during lunch hours.', 'tanvir.jpg', '01566778899', 'male', 'CSE', '2022-23', '2025-09-08 02:37:59', 'member', NULL, NULL),
+(191, 14, 'Tarmim', 'tarmim@mail.com', '$2b$10$zzDn3lkCTK8TTIptjeOnSemAD4gvxpSsWmgJf3g1jPfE3Fan6vM/6', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:13', 'member', NULL, NULL),
+(114, 11, 'plabon', 'test@test.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 09:36:33', 'member', NULL, NULL),
+(44, 16, 'Tofayel shishir', 'tofayal@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 05:54:00', 'member', NULL, NULL),
+(30, 13, 'tuhin', 'tuhin@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-08 04:11:07', 'member', NULL, NULL),
+(212, 13, 'md. Tuhin', 'tuhin@mail.com', '$2b$10$K99syY0vZA9k9lehl/ltdeWsCx4n0vb63jgS.IW/ZRXsTXvQ1PvuK', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 19:34:13', 'Joint Secretary', NULL, NULL),
+(190, 14, 'Md. Tuhin', 'tuhin@mail.com', '$2b$10$UhBBpYrfAMKWrV1tqhz3DO11z71K0FfkP.IqMuEKlKFgZxDU9pow6', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:13', 'General Secretary', NULL, NULL),
+(67, 18, 'salman sadick ucchash', 'ucchash@confident.club', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-09 06:44:39', 'General Secretary', NULL, NULL),
+(11, 15, 'ucchash', 'ucchash@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'admin', NULL, NULL, NULL, NULL, NULL, NULL, '2025-09-07 05:28:21', 'President', NULL, NULL),
+(184, 14, 'Ucchash', 'ucchash@mail.com', '$2b$10$PRWSgAX6O6NbPVVx88LIkeqXEylUCenKM7L78UbqU8SAG.R7bV7RS', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:12', 'member', NULL, NULL),
+(28, 14, 'Zinnia Tasnim', 'zinna@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', 'A enthusist of cyber security', '1757478073660-920362182.jpg', '018736456464', 'female', 'Law and Justice', '2020-21', '2025-09-08 03:36:36', 'member', NULL, NULL),
+(179, 14, 'Zinnia', 'zinnia@mail.com', '$2b$10$X6XJyhJSaPcVUEi3cWid7eAJ5h51nAW2zJWheOJ94G10CHRbaGG3y', 'member', NULL, NULL, NULL, NULL, NULL, NULL, '2026-01-10 18:41:11', 'member', NULL, NULL);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `events`
+--
+
+CREATE TABLE `events` (
+  `id` int(11) NOT NULL,
+  `club_id` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `description` text DEFAULT NULL,
+  `event_date` datetime DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `events`
+--
+
+INSERT INTO `events` (`id`, `club_id`, `title`, `description`, `event_date`, `created_at`) VALUES
+(3, 14, 'Cyber Security Awareness Seminar\r\n', 'The Cyber Security Club of JKKNIU organized a seminar titled “Cyber Security Awareness: Protecting Yourself in the Digital Age” at the Conference Room, Register Building. The program focused on raising awareness among students about online threats, including phishing, malware attacks, and data privacy issues. Guest speakers from both academia and industry delivered insightful sessions on how individuals can safeguard their personal information in an increasingly digital world. Interactive discussions allowed students to share their experiences with cyber threats and learn practical safety tips. The seminar concluded with a Q&A session, encouraging active participation from all attendees.', '2025-09-07 08:19:50', '2025-09-01 02:19:50'),
+(4, 14, 'Capture the Flag (CTF) Competition\r\nDescription:', '\r\nThe Cyber Security Club hosted a Capture the Flag (CTF) Competition at the Register Building, JKKNIU, where participants from various departments competed to solve security challenges. The event was designed to test problem-solving skills in areas such as cryptography, steganography, reverse engineering, and network security. Teams worked under time pressure to crack codes, exploit vulnerabilities, and capture digital flags. The competitive environment encouraged collaboration, critical thinking, and practical application of theoretical knowledge. Prizes were awarded to the top three teams, and the event ended with a motivational speech by the Head of the CSE Department, highlighting the importance of cyber security skills in today’s digital era.', '2025-09-24 09:39:46', '2025-09-10 02:30:15'),
+(5, 14, 'Hands-on Ethical Hacking Workshop\r\n\r\n', 'A day-long workshop titled “Hands-on Ethical Hacking and Penetration Testing” was held at the Conference Room, CSE Department, JKKNIU. The workshop aimed to introduce students to the basics of ethical hacking, penetration testing, and security vulnerabilities commonly found in web applications. Participants gained hands-on experience using tools such as Kali Linux, Wireshark, and Metasploit. Special focus was given to identifying SQL injection and cross-site scripting (XSS) attacks, along with methods to secure applications from such exploits. The event was highly interactive, with lab sessions enabling students to try out real-time attack and defense scenarios. The program concluded with certificates being awarded to all participants.', NULL, '2025-09-10 02:30:15'),
+(7, 14, 'Cyber Security Awareness Seminar', 'The Cyber Security Club of JKKNIU organized a seminar titled “Cyber Security Awareness: Protecting Yourself in the Digital Age” at the CSE Department Conference Room, Register Building. The program focused on raising awareness among students about online threats, including phishing, malware attacks, and data privacy issues. Guest speakers delivered insightful sessions on how individuals can safeguard their personal information. Interactive discussions and Q&A encouraged active participation and knowledge sharing.', '2025-09-20 00:00:00', '2025-09-10 02:55:46'),
+(8, 14, 'Hands-on Ethical Hacking Workshop', 'A day-long workshop titled “Hands-on Ethical Hacking and Penetration Testing” was held at the Conference Room, CSE Department, JKKNIU. The workshop aimed to introduce students to ethical hacking, penetration testing, and common web application vulnerabilities. Participants gained hands-on experience with tools such as Kali Linux, Wireshark, and Metasploit. Special sessions covered SQL injection and XSS attacks. The event concluded with certificates for all participants.', '2025-09-20 00:00:00', '2025-09-10 02:55:46'),
+(9, 14, 'Capture the Flag (CTF) Competition', 'The Cyber Security Club hosted a Capture the Flag (CTF) Competition at the Register Building, JKKNIU, where participants solved security challenges like cryptography, steganography, and reverse engineering. Teams worked to exploit vulnerabilities, crack codes, and capture digital flags. The competition encouraged collaboration, problem-solving, and practical application of cyber security skills. Prizes were awarded to top teams, and the Head of the CSE Department highlighted the importance of cyber skills.', '2025-09-20 00:00:00', '2025-09-10 02:55:46'),
+(10, 14, 'Digital Forensics Workshop', 'The Cyber Security Club organized a Digital Forensics Workshop at the CSE Department Conference Room, Register Building. The program introduced students to digital evidence collection, recovery of deleted files, and forensic tools such as Autopsy. Case studies demonstrated real-world cybercrime investigations. A simulated case study engaged participants in solving a mock cybercrime.', '2025-09-21 00:00:00', '2025-09-10 02:55:46'),
+(11, 14, 'Secure Coding Bootcamp', 'A Secure Coding Bootcamp was held at the CSE Department Conference Room, JKKNIU. The event taught best practices for writing secure code, focusing on common vulnerabilities like SQL injection, XSS, and insecure authentication. Participants completed coding exercises to implement secure solutions. Industry experts guided students on tools and frameworks for secure development, and participants presented mini-projects to demonstrate their learning.', '2025-09-22 00:00:00', '2025-09-10 02:55:46'),
+(12, 14, 'Incident Response Simulation Drill', 'The Cyber Security Club hosted an Incident Response Simulation Drill at the Register Building Conference Hall, JKKNIU. Students acted as IT security staff responding to a simulated ransomware attack. The drill focused on detection, containment, and recovery processes. Teams practiced communication strategies during crises and followed incident response frameworks. Faculty and industry experts provided feedback and recommendations.', '2025-09-24 00:00:00', '2025-09-10 02:55:46'),
+(13, 14, 'Cyber Security Career Talk', 'The Cyber Security Club organized a Career Talk at the CSE Department Seminar Room, JKKNIU. Industry professionals and alumni shared career paths in ethical hacking, penetration testing, and cyber defense. Students learned about certifications like CEH, CompTIA Security+, and CISSP. The session featured an interactive Q&A and networking opportunities for students to connect with experts.', '2025-09-25 00:00:00', '2025-09-10 02:55:46'),
+(14, 14, 'Cyber Security Awareness Seminar', 'The Cyber Security Club of JKKNIU organized a seminar titled “Cyber Security Awareness: Protecting Yourself in the Digital Age” at the CSE Department Conference Room, Register Building. The program focused on raising awareness among students about online threats, including phishing, malware attacks, and data privacy issues. Guest speakers delivered insightful sessions on how individuals can safeguard their personal information. Interactive discussions and Q&A encouraged active participation and knowledge sharing.', '2025-09-20 00:00:00', '2025-09-10 02:55:46'),
+(15, 14, 'Hands-on Ethical Hacking Workshop', 'A day-long workshop titled “Hands-on Ethical Hacking and Penetration Testing” was held at the Conference Room, CSE Department, JKKNIU. The workshop aimed to introduce students to ethical hacking, penetration testing, and common web application vulnerabilities. Participants gained hands-on experience with tools such as Kali Linux, Wireshark, and Metasploit. Special sessions covered SQL injection and XSS attacks. The event concluded with certificates for all participants.', '2025-09-20 00:00:00', '2025-09-10 02:55:46'),
+(16, 14, 'Capture the Flag (CTF) Competition', 'The Cyber Security Club hosted a Capture the Flag (CTF) Competition at the Register Building, JKKNIU, where participants solved security challenges like cryptography, steganography, and reverse engineering. Teams worked to exploit vulnerabilities, crack codes, and capture digital flags. The competition encouraged collaboration, problem-solving, and practical application of cyber security skills. Prizes were awarded to top teams, and the Head of the CSE Department highlighted the importance of cyber skills.', '2025-09-20 00:00:00', '2025-09-10 02:55:46'),
+(17, 14, 'Digital Forensics Workshop', 'The Cyber Security Club organized a Digital Forensics Workshop at the CSE Department Conference Room, Register Building. The program introduced students to digital evidence collection, recovery of deleted files, and forensic tools such as Autopsy. Case studies demonstrated real-world cybercrime investigations. A simulated case study engaged participants in solving a mock cybercrime.', '2025-09-21 00:00:00', '2025-09-10 02:55:46'),
+(18, 14, 'Secure Coding Bootcamp', 'A Secure Coding Bootcamp was held at the CSE Department Conference Room, JKKNIU. The event taught best practices for writing secure code, focusing on common vulnerabilities like SQL injection, XSS, and insecure authentication. Participants completed coding exercises to implement secure solutions. Industry experts guided students on tools and frameworks for secure development, and participants presented mini-projects to demonstrate their learning.', '2025-09-22 00:00:00', '2025-09-10 02:55:46'),
+(19, 14, 'Incident Response Simulation Drill', 'The Cyber Security Club hosted an Incident Response Simulation Drill at the Register Building Conference Hall, JKKNIU. Students acted as IT security staff responding to a simulated ransomware attack. The drill focused on detection, containment, and recovery processes. Teams practiced communication strategies during crises and followed incident response frameworks. Faculty and industry experts provided feedback and recommendations.', '2025-09-24 00:00:00', '2025-09-10 02:55:46'),
+(20, 14, 'Cyber Security Career Talk', 'The Cyber Security Club organized a Career Talk at the CSE Department Seminar Room, JKKNIU. Industry professionals and alumni shared career paths in ethical hacking, penetration testing, and cyber defense. Students learned about certifications like CEH, CompTIA Security+, and CISSP. The session featured an interactive Q&A and networking opportunities for students to connect with experts.', '2025-09-25 00:00:00', '2025-09-10 02:55:46'),
+(21, 13, 'Competitive Programming Bootcamp', 'The Programming Club of JKKNIU organized a three-day Competitive Programming Bootcamp at the CSE Department. The program focused on problem-solving strategies, algorithm design, and data structures. Experienced mentors guided participants through real-world programming challenges and taught them how to optimize solutions. The bootcamp concluded with a practice contest modeled on ICPC-style problems, helping students prepare for national and international programming contests.', '2025-09-20 00:00:00', '2025-09-10 02:56:50'),
+(22, 13, 'Hackathon 1.0 – Build the Future', 'A 24-hour Hackathon titled “Hackathon 1.0 – Build the Future” was hosted by the Programming Club in the Register Building, JKKNIU. Teams of students worked on innovative software solutions ranging from web apps to AI-powered systems. The event encouraged creativity, teamwork, and time management. Mentors from academia and industry provided guidance, and the best projects were awarded prizes and certificates. This hackathon became a milestone event for inspiring young innovators.', '2025-09-22 00:00:00', '2025-09-10 02:56:50'),
+(23, 13, 'Data Structures and Algorithms Workshop', 'The Programming Club conducted an intensive workshop on Data Structures and Algorithms (DSA) at the CSE Department Seminar Room. The workshop emphasized solving complex problems using arrays, linked lists, trees, and graphs. Special sessions covered algorithmic paradigms such as divide-and-conquer, greedy, and dynamic programming. Students practiced implementing solutions in C, C++, and Java. The workshop improved coding efficiency and enhanced preparation for job interviews and coding competitions.', '2025-09-23 00:00:00', '2025-09-10 02:56:51'),
+(24, 13, 'Web Development Crash Course', 'The Programming Club arranged a Web Development Crash Course at the Conference Room, Register Building, JKKNIU. The event covered HTML, CSS, JavaScript, and backend basics using PHP and Node.js. Participants built mini-projects like personal portfolios and simple blogging platforms. The crash course motivated students to explore full-stack development and equipped them with practical knowledge for future projects.', '2025-09-25 00:00:00', '2025-09-10 02:56:51'),
+(25, 16, 'Career Guidance Seminar', 'The Career Club of JKKNIU organized a seminar on career guidance at the CSE Department Seminar Room. The program focused on helping students understand different career paths in IT, business, and government sectors. Career counselors and alumni shared valuable insights on skill development, professional networking, and higher studies opportunities. Students actively engaged in Q&A sessions to gain clarity about their future career decisions.', '2025-09-20 00:00:00', '2025-09-10 02:58:10'),
+(26, 16, 'CV Writing & Interview Skills Workshop', 'A practical workshop on CV Writing and Interview Skills was held at the Register Building, JKKNIU, organized by the Career Club. The workshop guided students on how to write professional resumes, tailor CVs for different industries, and showcase technical and soft skills effectively. Mock interview sessions were conducted where participants practiced communication and confidence-building. HR professionals shared tips to avoid common mistakes and prepare for real interviews.', '2025-09-22 00:00:00', '2025-09-10 02:58:10'),
+(27, 16, 'Job Fair 2025', 'The Career Club hosted Job Fair 2025 at the Register Building Conference Hall, JKKNIU, connecting graduating students with leading companies. Representatives from IT firms, banks, and NGOs set up booths to interact with students. The event featured networking sessions, on-spot interviews, and internship opportunities. Students gained exposure to industry expectations and recruitment processes, making this event one of the most impactful initiatives of the Career Club.', '2025-09-23 00:00:00', '2025-09-10 02:58:10'),
+(28, 16, 'Soft Skills Development Workshop', 'A workshop on Soft Skills Development was conducted by the Career Club at the CSE Department Conference Room. The session focused on communication skills, teamwork, leadership, and time management. Trainers engaged participants through group activities, role-play, and real-world scenarios. The workshop encouraged students to improve personal effectiveness and prepare for both academic and professional success.', '2025-09-25 00:00:00', '2025-09-10 02:58:10'),
+(29, 19, 'Public Speaking Workshop', 'The Confident Minds Club of JKKNIU organized a Public Speaking Workshop at the CSE Department Seminar Room. The program focused on enhancing students’ speaking confidence, articulation, and presentation skills. Experienced speakers and trainers conducted interactive sessions, including impromptu speeches, speech structuring, and voice modulation exercises. Participants received feedback to improve clarity, confidence, and stage presence.', '2025-09-20 00:00:00', '2025-09-10 03:03:22'),
+(30, 19, 'Debate Competition', 'A Debate Competition was hosted by the Confident Minds Club at the Register Building, JKKNIU. Teams of students debated on current social, technological, and environmental topics. Judges evaluated participants on argument clarity, logic, confidence, and rebuttal skills. The event encouraged critical thinking, teamwork, and effective communication, with prizes awarded to the top-performing teams.', '2025-09-21 00:00:00', '2025-09-10 03:03:22'),
+(31, 19, 'Leadership and Confidence Seminar', 'The Confident Minds Club conducted a Leadership and Confidence Seminar at the Conference Room, Register Building, JKKNIU. The session focused on developing leadership qualities, self-confidence, and decision-making skills among students. Guest speakers shared strategies to overcome fear, manage stress, and motivate teams effectively. Interactive activities and role-playing helped students practice leadership in real-world scenarios.', '2025-09-23 00:00:00', '2025-09-10 03:03:22'),
+(32, 19, 'Personality Development Workshop', 'A Personality Development Workshop was held by the Confident Minds Club at the CSE Department Seminar Room. The program emphasized improving interpersonal skills, positive attitude, professional behavior, and self-presentation. Trainers conducted group exercises, discussions, and confidence-building activities. Students gained insights on building a strong personality and enhancing personal and professional growth.', '2025-09-25 00:00:00', '2025-09-10 03:03:22'),
+(33, 14, 'Cybercon 2025', 'The most awaited cybercon is comming to our camping soon. stay tuned', '2025-12-12 03:09:00', '2025-11-02 18:10:04'),
+(34, 14, 'Intro to Digital Forensics', 'Introduction to digital forensics...', '2025-11-28 16:30:00', '2025-11-15 19:08:47'),
+(35, 14, 'Monthly CTF contest', 'JKKNIU Cyber Security club helds ctf contest in every month. Its happend in the next monday according to the students suitable time for the Computer Science and Engineering students of Jatiya Kabi Kazi Nazrul Islam University .', '2026-01-26 20:35:00', '2026-01-02 17:36:21'),
+(36, 18, 'Unlock Your Inner Confidence', 'Confident Minds Club at JKKNIU proudly presents “Unlock Your Inner Confidence,” an interactive and inspiring event focused on building self-belief and mental strength among students.\nThe event features engaging sessions on confidence-building, overcoming self-doubt, and managing stress in academic and social life.\nExperienced speakers and facilitators will share practical strategies to improve communication skills and self-esteem.\nParticipants will take part in group activities, discussions, and short exercises designed to boost positive thinking.\nThe event also creates a safe space for students to share experiences and learn from one another.\nThrough motivation and teamwork, attendees will be encouraged to step out of their comfort zones.\n“Unlock Your Inner Confidence” aims to promote mental well-being and personal growth on campus.\nThe event reflects the club’s mission to empower students to become confident, resilient, and proactive individuals.', '2026-01-16 14:00:00', '2026-01-02 17:56:22');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `event_registrations`
+--
+
+CREATE TABLE `event_registrations` (
+  `id` int(11) NOT NULL,
+  `event_id` int(11) NOT NULL,
+  `user_id` int(11) NOT NULL,
+  `registered_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `event_registrations`
+--
+
+INSERT INTO `event_registrations` (`id`, `event_id`, `user_id`, `registered_at`) VALUES
+(1, 20, 13, '2025-11-01 20:55:01'),
+(2, 34, 54, '2025-11-15 19:25:30'),
+(3, 33, 54, '2025-11-15 19:26:27'),
+(5, 35, 13, '2026-01-02 17:39:02'),
+(6, 35, 66, '2026-01-02 17:54:13');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `gallery_images`
+--
+
+CREATE TABLE `gallery_images` (
+  `id` int(11) NOT NULL,
+  `club_id` int(11) NOT NULL,
+  `caption` varchar(255) NOT NULL,
+  `filename` varchar(255) NOT NULL,
+  `uploaded_by` int(11) DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `gallery_images`
+--
+
+INSERT INTO `gallery_images` (`id`, `club_id`, `caption`, `filename`, `uploaded_by`, `created_at`) VALUES
+(3, 14, 'A beautiful place', '1757394718038-466470709.jpg', 9, '2025-09-09 05:11:58'),
+(4, 16, 'A career Club', '1757396645357-473457280.JPG', 41, '2025-09-09 05:44:06'),
+(5, 16, 'A career Club', '1757396663466-370255746.HEIC', 41, '2025-09-09 05:44:23'),
+(6, 16, 'A career Club', '1757396681134-287672333.jpg', 41, '2025-09-09 05:44:41'),
+(7, 16, 'A career club', '1757396701453-476364068.jpg', 41, '2025-09-09 05:45:01'),
+(8, 16, 'A career Club', '1757396717210-591934759.jpg', 41, '2025-09-09 05:45:17'),
+(9, 16, 'a career club', '1757396736116-328831521.jpg', 41, '2025-09-09 05:45:36'),
+(10, 16, 'A career Club for case', '1757396774541-97966534.jpg', 41, '2025-09-09 05:46:14'),
+(11, 16, 'My career growing club for even', '1757396804598-698217392.jpg', 41, '2025-09-09 05:46:44'),
+(12, 16, 'A program held in the career club', '1757468449725-150894816.jpg', 7, '2025-09-10 01:40:49'),
+(13, 13, 'A programming based seminar', '1757468507834-977808162.png', 7, '2025-09-10 01:41:47'),
+(14, 13, 'A programming Contest on caseprint', '1757468567256-929484509.jpg', 7, '2025-09-10 01:42:47'),
+(15, 14, 'Monthly CTF 5 champion', '1762030742590-734864037.jpg', 13, '2025-11-01 20:59:02'),
+(19, 14, 'Test Picture 2', '1763233846108-387369396.png', 9, '2025-11-15 19:10:46'),
+(22, 19, 'Test 1223', '1763235274737-560254366.png', 69, '2025-11-15 19:34:34'),
+(23, 19, 'Test 112233', '1763235294829-539925502.jpg', 69, '2025-11-15 19:34:54'),
+(24, 14, 'Coffee', '1763319296590-981199143.jpg', 9, '2025-11-16 18:54:56'),
+(25, 20, 'A Simple Documentary.', '1768073004113-671153895.jpg', 71, '2026-01-10 19:23:24');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `messages`
+--
+
+CREATE TABLE `messages` (
+  `id` int(11) NOT NULL,
+  `sender_id` int(11) NOT NULL,
+  `receiver_id` int(11) NOT NULL,
+  `message` text NOT NULL,
+  `status` tinyint(1) NOT NULL DEFAULT 0,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `messages`
+--
+
+INSERT INTO `messages` (`id`, `sender_id`, `receiver_id`, `message`, `status`, `created_at`) VALUES
+(1, 9, 13, 'hello', 1, '2025-10-29 09:51:13'),
+(2, 13, 9, 'hi. how\'s going?', 1, '2025-10-29 09:51:41'),
+(3, 9, 13, 'so so. how \'bout you?', 1, '2025-10-29 09:52:27'),
+(4, 9, 13, 'hy', 1, '2025-10-29 10:02:42'),
+(5, 9, 13, 'hey?', 1, '2025-10-29 10:02:44'),
+(6, 13, 9, 'is ok?', 1, '2025-10-30 17:52:14'),
+(7, 9, 80, 'hello', 0, '2025-10-30 17:53:05'),
+(8, 9, 38, 'it sent and work', 0, '2025-10-30 17:53:59'),
+(9, 9, 38, 'jesh', 0, '2025-10-30 17:54:11'),
+(10, 9, 13, 'hello', 1, '2025-10-30 17:54:25'),
+(11, 9, 13, 'find wnd are you ok', 1, '2025-10-30 17:54:33'),
+(12, 9, 13, 'gsh', 1, '2025-10-30 17:55:02'),
+(13, 9, 13, 'omng', 1, '2025-10-30 17:55:05'),
+(14, 9, 13, 'hello', 1, '2025-10-30 17:55:07'),
+(15, 9, 13, 'are you ok', 1, '2025-10-30 17:55:11'),
+(16, 13, 9, 'whatsapp', 1, '2025-11-01 20:17:11'),
+(17, 9, 13, 'nothing special', 1, '2025-11-01 20:17:20'),
+(18, 9, 13, 'are you good?', 1, '2025-11-01 20:17:28'),
+(19, 13, 9, 'yep', 1, '2025-11-01 20:17:55'),
+(20, 13, 9, 'how about you?', 1, '2025-11-01 20:17:58'),
+(21, 9, 13, 'i\'m good. how about you?', 1, '2025-11-03 04:23:10'),
+(22, 9, 13, '?', 1, '2025-11-03 04:23:20'),
+(23, 13, 9, 'good', 1, '2025-11-03 04:23:28'),
+(24, 9, 38, 'Test123', 0, '2025-11-16 19:38:26'),
+(25, 9, 79, 'Hello', 0, '2025-11-19 19:34:24'),
+(26, 13, 9, 'hello', 1, '2025-11-24 05:40:25'),
+(27, 9, 26, 'hello', 0, '2026-01-10 18:43:35');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `profile`
+--
+
+CREATE TABLE `profile` (
+  `id` int(11) NOT NULL,
+  `email` varchar(255) NOT NULL,
+  `name` varchar(255) DEFAULT NULL,
+  `roll` varchar(50) DEFAULT NULL,
+  `session` varchar(50) DEFAULT NULL,
+  `dept` varchar(255) DEFAULT NULL,
+  `gender` enum('male','female') DEFAULT NULL,
+  `contact_no` varchar(255) DEFAULT NULL,
+  `photo` varchar(255) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `profile`
+--
+
+INSERT INTO `profile` (`id`, `email`, `name`, `roll`, `session`, `dept`, `gender`, `contact_no`, `photo`) VALUES
+(1, 'prantick@mail.com', 'Prantick Paul', NULL, NULL, NULL, NULL, NULL, NULL),
+(2, 'farzana@mail.com', 'Farzana Afroz', NULL, '2020-21', 'Computer Science and Engineering', 'female', '01333221122', '1767904768951-90701872.png'),
+(5, 'admin@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(6, 'president@gmai.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(7, 'secretary@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(8, 'asif@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(9, 'omayer@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(10, 'shazid@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(11, 'spondon@mail.com', 'Spondon Rema', NULL, '2020-21', 'CSE', 'male', '01873021457', '1768072383933-431616841.jpg'),
+(12, 'mayeen@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(13, 'ucchash@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(14, 'Tamim@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(15, 'hasan@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(16, 'rakib@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(17, 'tanvir@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(18, 'samira@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(19, 'mahmud@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(20, 'ayesha@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(21, 'hasan@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(22, 'rumi@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(23, 'alice@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(24, 'fahim@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(25, 'nusrat@jkkniu.edu.bd', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(26, 'mehedi@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(27, 'rafi@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(28, 'shagor@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(29, 'shaikat@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(30, 'zinna@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(31, 'prantick@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(32, 'tuhin@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(33, 'fahad@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(34, 'nabeel@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(35, 'lamia@gamil.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(36, 'farzana@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(37, 'raful@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(38, 'arafat@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(39, 'mridula@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(40, 'ashari@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(41, 'sorol@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(42, 'bappy@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(43, 'momen@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(44, 'eti@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(45, 'ashraful@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(46, 'tofayal@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(47, 'habib@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(48, 'jamal@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(49, 'jitu@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(50, 'afjal@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(51, 'naeem@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(52, 'saiful@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(53, 'sarwar@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(54, 'nadia@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(55, 'peal@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(56, 'akib@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(57, 'h.arif@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(58, 'arif@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(59, 'tamim2@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(60, 'saurov@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(61, 'sadman@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(62, 'maruff@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(63, 'safin@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(64, 'babu@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(65, 'mukitul@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(66, 'shakib@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(67, 'ashari@confident.club', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(68, 'ucchash@confident.club', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(69, 'Alamin@eee.club', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(70, 'shameem@eee.club', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(71, 'nizam@management.club', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(72, 'jamal@management.club', 'Jamal Hossain', NULL, '2018-19', 'Management', 'male', '01876987678', '1768073095856-372622011.png'),
+(73, 'sadia22@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(74, 'maliha65@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(75, 'mamun94@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(76, 'rini46@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(77, 'sadia15@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(78, 'pritom48@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(79, 'shohag56@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(80, 'imran25@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(81, 'priya19@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(82, 'nusrat44@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(83, 'saiful7@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(84, 'joydeb@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(85, 'tanvir37@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(86, 'parvez21@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(87, 'shanto27@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(88, 'sharmin55@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(89, 'tanvir26@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(90, 'rupom86@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(91, 'mamun64@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(92, 'monir40@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(93, 'hasan41@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(94, 'labib65@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(95, 'farzana35@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(96, 'hasan76@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(97, 'shamim50@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(98, 'shuvo70@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(99, 'saiful47@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(100, 'shanto34@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(101, 'shaila42@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(102, 'shuvo66@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(103, 'sumon27@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(104, 'shanto58@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(105, 'shohag36@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(106, 'nusrat83@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(107, 'sadia18@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(108, 'lamisa81@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(109, 'mim74@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(110, 'sabbina68@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(111, 'bristy77@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(112, 'sajid23@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(113, 'mim67@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(114, 'asif@asif.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(115, 'test@test.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(116, 'sohag68@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(117, 'sabbina97@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(118, 'rizwan87@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(119, 'farzana43@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(120, 'nusrat45@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(121, 'labib22@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(122, 'rizwan14@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(123, 'fahim36@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(124, 'tanvir73@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(125, 'labib52@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(126, 'saiful8@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(127, 'shaila96@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(128, 'tania62@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(129, 'arif20@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(130, 'sohag79@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(131, 'mizan61@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(132, 'nazia32@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(133, 'sultana84@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(134, 'rakib82@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(135, 'anika56@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(136, 'mim33@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(137, 'elma78@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(138, 'priya80@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(139, 'parvez31@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(140, 'sharmin38@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(141, 'lamisa11@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(142, 'arif75@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(143, 'sabbir60@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(144, 'nazia73@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(145, 'shohag10@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(146, 'sabbir16@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(147, 'shohag71@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(148, 'hasan30@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(149, 'tahmid29@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(150, 'jannat33@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(151, 'farzana53@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(152, 'rafi28@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(153, 'sadia88@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(154, 'imran42@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(155, 'rupom98@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(156, 'monir49@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(157, 'rafi92@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(158, 'maliha63@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(159, 'elma90@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(160, 'shamim88@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(161, 'parvez91@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(162, 'shohag37@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(163, 'spondon.rema01@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(164, 'ahp007@gmail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(165, 'andy@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(166, 'nibir@mail.com', 'Nibir Tarafder', NULL, NULL, NULL, NULL, NULL, NULL),
+(368, 'lamia@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(369, 'sumon@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(370, 'zinnia@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(371, 'saikat@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(372, 'era@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(373, 'nabeel@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(374, 'abir@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(375, 'ucchash@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(376, 'shagor@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(377, 'rafi@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(378, 'bissash@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(379, 'fahad@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(380, 'monisha@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(381, 'tuhin@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(382, 'tarmim@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(383, 'tamjid@mail.com', 'Tamjid Hossen', NULL, '2020-21', 'CSE', 'male', '01897654564', '1768074454595-682156531.jpg'),
+(384, 'noornabi@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(385, 'arafat@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(386, 'ashari@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(387, 'sorol@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(388, 'ifro@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(389, 'mridula@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(390, 'arman@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(391, 'akib@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(392, 'avishek@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(393, 'antor@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(394, 'emran@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(395, 'jarif@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(396, 'raful@mail.com', NULL, NULL, NULL, NULL, NULL, NULL, NULL),
+(397, 'tamim@mail.com', 'Saif Uddin Chaudhury Tamim', NULL, '2020-21', 'CSE', 'male', '01873080048', '1768073482970-162240608.jpg');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+CREATE TABLE `users` (
+  `id` int(11) NOT NULL,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(255) NOT NULL,
+  `role` enum('authority','admin','student','member') DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
+  `club_id` int(11) NOT NULL,
+  `status` enum('pending','approved','rejected') DEFAULT 'pending'
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`id`, `name`, `email`, `password`, `role`, `created_at`, `club_id`, `status`) VALUES
+(4, 'plabon', 'test@test.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', '2025-09-07 02:40:35', 11, 'approved'),
+(5, 'asif ', 'asif@asif.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-07 04:03:26', 11, 'approved'),
+(6, 'Sumon', 'sumon@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-07 04:44:03', 14, 'rejected'),
+(7, 'Abir', 'abir@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-07 04:44:26', 12, 'pending'),
+(8, 'plabon', 'plabon@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-07 04:45:09', 10, 'pending'),
+(9, 'hasan', 'hasan@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-07 05:28:46', 14, 'approved'),
+(10, 'Farzana Afroz', 'farzana@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:32:50', 13, 'approved'),
+(11, 'Lamia Akter', 'lamia@gamil.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:33:16', 13, 'approved'),
+(12, 'Zinnia Tasnim', 'zinna@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:33:49', 14, 'approved'),
+(13, 'shaikat', 'shaikat@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:34:09', 14, 'approved'),
+(14, 'Nabeel', 'nabeel@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:34:41', 13, 'approved'),
+(15, 'shagor', 'shagor@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:34:59', 14, 'approved'),
+(16, 'rafi', 'rafi@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:35:15', 14, 'approved'),
+(17, 'mehedi', 'mehedi@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:35:36', 14, 'approved'),
+(18, 'fahad', 'fahad@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:35:53', 13, 'approved'),
+(19, 'tuhin', 'tuhin@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 03:36:12', 13, 'approved'),
+(20, 'raful mia', 'raful@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 04:10:12', 14, 'approved'),
+(21, 'prantick', 'prantick@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-08 04:10:49', 13, 'approved'),
+(22, 'arafat', 'arafat@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 01:53:52', 14, 'approved'),
+(23, 'aashari', 'ashari@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 01:54:15', 14, 'approved'),
+(24, 'shorol', 'sorol@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 01:54:34', 14, 'approved'),
+(25, 'mridula', 'mridula@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 01:55:06', 14, 'approved'),
+(26, 'peal saha', 'peal@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:48:23', 16, 'approved'),
+(27, 'Nadia Sultana', 'nadia@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:48:47', 16, 'approved'),
+(28, 'Md. sarwar hossain shihab', 'sarwar@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'member', '2025-09-09 05:49:16', 16, 'approved'),
+(29, 'md saiful Islam', 'saiful@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:49:51', 16, 'approved'),
+(30, 'kh naeem', 'naeem@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:50:14', 16, 'approved'),
+(31, 'Md. afjal Hossain', 'afjal@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:50:38', 16, 'approved'),
+(32, 'Jillo jitu', 'jitu@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:51:25', 16, 'approved'),
+(33, 'Jamal Hossain', 'jamal@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:51:46', 16, 'approved'),
+(34, 'Habibur rahman', 'habib@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:52:13', 16, 'approved'),
+(35, 'Tofayel shishir', 'tofayal@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:52:45', 16, 'approved'),
+(36, 'Md ashraful Islam', 'ashraful@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:53:17', 16, 'approved'),
+(37, 'Tahmida Eti', 'eti@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 05:53:45', 16, 'approved'),
+(38, 'akib hasan', 'akib@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:10:57', 14, 'approved'),
+(39, 'Shazid Maruf', 'shazid@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:19:31', 13, 'approved'),
+(40, 'Md Abu Omayer Babu', 'babu@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:20:22', 13, 'approved'),
+(41, 'Shafin Ahmed', 'safin@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:21:00', 13, 'approved'),
+(42, 'Maruf', 'maruff@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:22:24', 13, 'approved'),
+(43, 'Sadman Ishtiak', 'sadman@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:23:41', 13, 'approved'),
+(44, 'Saurov Hasan', 'saurov@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:25:01', 13, 'approved'),
+(45, 'Tamim Iqbal', 'tamim2@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:26:23', 13, 'approved'),
+(46, 'Arif Hasan', 'arif@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:28:16', 13, 'approved'),
+(47, 'Hasan Arif', 'h.arif@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:28:54', 13, 'approved'),
+(48, 'spondon', 'spondon@mail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', '', '2025-09-09 06:32:02', 14, 'approved'),
+(49, 'Shanto', 'shanto58@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:45', 18, 'approved'),
+(50, 'Tania', 'tania9@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 12, 'pending'),
+(51, 'Saiful', 'saiful7@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 14, 'approved'),
+(52, 'Labib', 'labib52@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 15, 'approved'),
+(53, 'Shohag', 'shohag37@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 20, 'approved'),
+(54, 'Shakil', 'shakil24@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 12, 'pending'),
+(55, 'Labib', 'labib65@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 16, 'approved'),
+(56, 'Sohag', 'sohag69@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 12, 'pending'),
+(57, 'Anika', 'anika56@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 13, 'approved'),
+(58, 'Sadia', 'sadia88@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:27:46', 19, 'approved'),
+(59, 'Tanvir', 'tanvir73@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(60, 'Rafi', 'rafi28@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(61, 'Sabbir', 'sabbir60@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 17, 'approved'),
+(62, 'Mitu', 'mitu39@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 12, 'pending'),
+(63, 'Rakib', 'rakib82@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(64, 'Nusrat', 'nusrat44@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(65, 'Mim', 'mim67@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(66, 'Parvez', 'parvez91@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 20, 'approved'),
+(67, 'Fahim', 'fahim36@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(68, 'Sumon', 'sumon27@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(69, 'Hasan', 'hasan41@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(70, 'Sultana', 'sultana84@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(71, 'Priya', 'priya19@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(72, 'Arif', 'arif75@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 17, 'approved'),
+(73, 'Farzana', 'farzana53@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(74, 'Sajid', 'sajid23@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(75, 'Shamim', 'shamim88@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 20, 'approved'),
+(76, 'Rizwan', 'rizwan14@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(77, 'Shuvo', 'shuvo66@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(78, 'Sadia', 'sadia12@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 10, 'pending'),
+(79, 'Monir', 'monir40@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(80, 'Jannat', 'jannat33@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(81, 'Imran', 'imran25@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(82, 'Nazia', 'nazia32@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(83, 'Lamisa', 'lamisa11@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 17, 'approved'),
+(84, 'Sumaiya', 'sumaiya95@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 12, 'pending'),
+(85, 'Bristy', 'bristy77@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(86, 'Tahmid', 'tahmid29@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(87, 'Mizan', 'mizan61@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(88, 'Shaila', 'shaila42@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(89, 'Shohag', 'shohag56@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(90, 'Mamun', 'mamun64@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(91, 'Elma', 'elma90@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 20, 'approved'),
+(92, 'Sharmin', 'sharmin38@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 17, 'approved'),
+(93, 'Labib', 'labib22@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(94, 'Tareq', 'tareq59@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 10, 'pending'),
+(95, 'Shanto', 'shanto34@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(96, 'Sabbina', 'sabbina68@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(97, 'Pritom', 'pritom48@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(98, 'Rupom', 'rupom86@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(99, 'Hasan', 'hasan30@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(100, 'Nusrat', 'nusrat45@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(101, 'Maliha', 'maliha63@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 20, 'approved'),
+(102, 'Fahim', 'fahim21@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 12, 'pending'),
+(103, 'Sohag', 'sohag79@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(104, 'Parvez', 'parvez31@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 17, 'approved'),
+(105, 'Mim', 'mim74@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(106, 'Saiful', 'saiful47@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(107, 'Nazia', 'nazia57@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 10, 'pending'),
+(108, 'Imran', 'imran85@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 12, 'pending'),
+(109, 'Shohag', 'shohag71@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(110, 'Arif', 'arif20@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(111, 'Sadia', 'sadia15@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(112, 'Farzana', 'farzana43@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(113, 'Tanvir', 'tanvir26@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(114, 'Rafi', 'rafi92@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 20, 'approved'),
+(115, 'Shuvo', 'shuvo70@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(116, 'Sajid', 'sajid54@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 12, 'pending'),
+(117, 'Rini', 'rini46@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(118, 'Lamisa', 'lamisa81@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(119, 'Sabbir', 'sabbir16@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(120, 'Rakib', 'rakib13@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 10, 'pending'),
+(121, 'Tania', 'tania62@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(122, 'Sharmin', 'sharmin55@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(123, 'Rizwan', 'rizwan87@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(124, 'Priya', 'priya80@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 17, 'approved'),
+(125, 'Monir', 'monir49@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 20, 'approved'),
+(126, 'Shamim', 'shamim50@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(127, 'Sadia', 'sadia18@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(128, 'Mizan', 'mizan89@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 12, 'pending'),
+(129, 'Shaila', 'shaila96@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(130, 'Shohag', 'shohag10@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(131, 'Mamun', 'mamun94@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(132, 'Elma', 'elma78@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 17, 'approved'),
+(133, 'Shanto', 'shanto27@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(134, 'Sabbina', 'sabbina97@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(135, 'Pritom', 'pritom99@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 12, 'pending'),
+(136, 'Rupom', 'rupom98@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 20, 'approved'),
+(137, 'Hasan', 'hasan76@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(138, 'Nusrat', 'nusrat83@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(139, 'Maliha', 'maliha65@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(140, 'Fahim', 'fahim12@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 10, 'pending'),
+(141, 'Sohag', 'sohag68@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 15, 'approved'),
+(142, 'Parvez', 'parvez21@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(143, 'Mim', 'mim33@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 17, 'approved'),
+(144, 'Saiful', 'saiful8@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 13, 'approved'),
+(145, 'Nazia', 'nazia73@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 19, 'approved'),
+(146, 'Imran', 'imran42@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 20, 'approved'),
+(147, 'Shohag', 'shohag36@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 11, 'approved'),
+(148, 'Arif', 'arif17@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 12, 'pending'),
+(149, 'Sadia', 'sadia22@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 14, 'approved'),
+(150, 'Farzana', 'farzana35@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 18, 'approved'),
+(151, 'Tanvir', 'tanvir37@gmail.com', '$2b$10$ovTXWhe6UnRQUP8gt.PBLeU6tR/re/JsO6gS.Ph8s3GNgIOEfcDPa', 'student', '2025-09-09 09:33:11', 16, 'approved'),
+(203, 'Andy', 'andy@mail.com', '$2b$10$nIWOLfXeSUzR9M4Xvbk8cOmDedyd5alBpmSD8.Y4mAytdF/bdbfIq', 'student', '2025-11-01 15:46:53', 20, 'approved'),
+(204, 'Robin', 'robin@mail.com', '$2b$10$iMfpsH1qkMrjitmV0omvNunM9mTN57Uvd2hjWxLMgKttJq45kiOwG', 'student', '2025-11-01 15:54:44', 17, 'pending'),
+(205, 'Shameem Hasan', 'shameem@eee.club', '$2b$10$fzJyQ3MLcIWh1C9CW.i0MOUuOS/dyBc5UIXJfz6cKuZwUQZNRKWuS', 'student', '2025-11-02 17:55:50', 14, 'approved'),
+(206, 'Spondonnn', 'spondon.rema01@gmail.com', '$2b$10$Iarvupy4a5//5vLwQyJCUOjw6BeXcpRAHi3jVjIpvGlil4OUe7UpK', 'student', '2025-11-02 18:49:56', 14, 'approved'),
+(208, 'test', 'test@hotmail.com', '$2b$10$JsT8r/hN2W3jsf/J1bEBi.CSmKRiDnzKHyOAP7hUylTqpI81rlJpm', 'student', '2025-11-03 04:17:42', 17, 'pending'),
+(209, 'asif hasan plabon', 'ahp007@gmail.com', '$2b$10$5nkZNcj0vDF32wdnZeaCm.zWhHb42aXxTMjh9ecwdlbc2SXCOsbPe', 'student', '2025-11-16 16:17:02', 14, 'approved'),
+(250, 'Spondon Rema', 'spondon@mail.com', '$2b$10$0NXRMXBbtBtBMx5bKECZU.2MvksSD/jhlWtuT18PLo5pLphaDNyQO', '', '2026-01-05 11:30:58', 11, 'pending'),
+(251, 'Spondon Rema', 'spondon@mail.com', '$2b$10$Zyd/mju4gFIeTph5QMpbTOkiVGrdRFnIgFS1ju2I1LcVnkAk7vqnq', 'member', '2026-01-08 18:39:09', 20, 'approved'),
+(252, 'Farzana Afroz', 'farzana@mail.com', '$2b$10$7G.TUGylxsPQOFGjvqJ4ke6XBfZYr6tQmILregDvazfuJIPC4ZvEu', 'member', '2026-01-08 18:46:33', 14, 'approved'),
+(253, 'Farzana Afroz', 'farzana@mail.com', '$2b$10$pJhDN0CP.QPTYbogSTBQOOvOsgoanuJ7sdNh9LajrIYw2ENvaf7Lu', 'member', '2026-01-08 18:47:05', 13, 'approved'),
+(254, 'Farzana Afroz', 'farzana@mail.com', '$2b$10$XnvDBB72vKuTTH6wHK0zduYocywyaXWw56iPGTadVyjJotsS70dp6', 'member', '2026-01-08 18:47:46', 18, 'approved'),
+(255, 'Prantick Paul', 'prantick@mail.com', '$2b$10$nTlBVjoIzpPIKwRytsZHZu2mAKRFUyN.PqOLz9AdETO9tu2Ajegqa', 'member', '2026-01-08 19:06:03', 14, 'approved'),
+(256, 'Prantick Paul', 'prantick@mail.com', '$2b$10$dXod9EC3Z6og6lH0TcooL.p.Vtdiz4TLp8uX4I2JZlWYyS6is9JQq', 'member', '2026-01-08 20:47:29', 18, 'pending'),
+(257, 'Prantick Paul', 'prantick@mail.com', '$2b$10$jj7u2.hUSBfEOKg130LiU.nBWdXbhd7PYDXEJn4CCI1AeQ50UOUfm', 'member', '2026-01-08 20:47:55', 13, 'approved'),
+(258, 'Prantick Paul', 'prantick@mail.com', '$2b$10$3nqgFsGkcNzQoD.wJGHWBes1Jr33Ddi9YBVMGPGNnOf1wDMQ.UtNy', 'member', '2026-01-08 20:48:54', 16, 'pending'),
+(259, 'Prantick Paul', 'prantick@mail.com', '$2b$10$lPzcd9RnTmOsuH4xFXEFKe677RSjdC7A0iduZ97.BbS5U/s3CL3X.', 'member', '2026-01-08 20:49:15', 10, 'pending'),
+(260, 'Prantick Paul', 'prantick@mail.com', '$2b$10$Jw6LffwWqiwqN1MK.HUgE.Ns2wB7zrTLE0UW8SjzdFhkrUhOtNheK', 'member', '2026-01-08 20:49:36', 11, 'pending'),
+(261, 'Saif Uddin Chaudhury Tamim', 'tamim@mail.com', '$2b$10$5a3ZEFwCfkVbbxMur9MtDuNC2oyhncWGOLmgOcp8c1.yAIgNkGolW', 'member', '2026-01-08 20:50:16', 14, 'approved'),
+(262, 'Saif Uddin Chaudhury Tamim', 'tamim@mail.com', '$2b$10$Ay/Fz/sABYRiFuEcwxFeAussJX8XDHAnUoIdJ2Lid7.TJgtQkMQAC', 'member', '2026-01-08 20:50:41', 13, 'approved'),
+(263, 'Saif Uddin Chaudhury Tamim', 'tamim@mail.com', '$2b$10$TacswuhkIaCmkukNqCyXq.t1Y/FTldE7pr6ilAjm5rftiYG2NDnFS', 'member', '2026-01-08 20:51:27', 18, 'pending'),
+(264, 'Raful Mia', 'raful@mail.com', '$2b$10$Q8978wc8OrgAyemngMGbDehlZ3.KJ62o4TFo/26Nb9moJyYxvaGp2', 'member', '2026-01-08 20:52:12', 14, 'approved'),
+(265, 'Raful Mia', 'raful@mail.com', '$2b$10$DALO10pqas02Ow90ydcdmeRFLKE3nVcblZ6IObCZKi3A2tpCzOU3S', 'member', '2026-01-08 20:52:38', 13, 'approved'),
+(266, 'Raful Mia', 'raful@mail.com', '$2b$10$NBcRoZz3/Ztoom9z79jvGOYXCXtJn8l4ZxRsa0oNzJelpsRPSgQuC', 'member', '2026-01-08 20:53:00', 11, 'pending'),
+(267, 'Raful Mia', 'raful@mail.com', '$2b$10$FnL9jIXoX3p94wI7MZJNl.2lHFpl8XK4sKR0nNnsyeUsmHYsl7LP.', 'member', '2026-01-08 20:53:24', 10, 'pending'),
+(268, 'Raful Mia', 'raful@mail.com', '$2b$10$sKGz3zFLZf0anAu6plq3keMVqWzSDx1hSloy8qm/dhrhNwmnQ7KS2', 'member', '2026-01-08 20:53:54', 16, 'pending'),
+(269, 'Jarif', 'jarif@mail.com', '$2b$10$IBret4xkOsfIdrMC2kE23epedO3twO2afh237lpn2xMZiMv9RLhOm', 'member', '2026-01-10 18:27:27', 14, 'approved'),
+(270, 'Md. Emran', 'emran@mail.com', '$2b$10$9QGgX2RvV6211L3cmVHyRe4XhFZj05.9GzayewKyBeexdiP.4sjA.', 'member', '2026-01-10 18:28:03', 14, 'approved'),
+(271, 'Alnor Antor', 'antor@mail.com', '$2b$10$gNPupeAlBSEn13PACDZsgOn6Nl8ULrU3s3bLak43FV8FmYdmCh9f6', 'member', '2026-01-10 18:28:35', 14, 'approved'),
+(272, 'Avishek Sarker', 'avishek@mail.com', '$2b$10$5cViLspkE0in/x5KOxVqv.UwiJXqchthc658SaGyBN4Pvb1qX8yWW', 'member', '2026-01-10 18:29:18', 14, 'approved'),
+(273, 'Md. Akib Bhuiyan', 'akib@mail.com', '$2b$10$2.lSRJ6xP/019ornTtrO8OM76OMfqtZaOtoGyy.7onS791dGlLAdm', 'member', '2026-01-10 18:29:55', 14, 'approved'),
+(274, 'Arman Mia', 'arman@mail.com', '$2b$10$9av7XkXyrvkwBvkh/D1ajem/cpFsNR.7FBUXWDm7mB/vddk7N1GmC', 'member', '2026-01-10 18:30:16', 14, 'approved'),
+(275, 'Mridula Rahman', 'mridula@mail.com', '$2b$10$9hEF46hFASdsWfs.7DLltexWIoxHPR1u/a44bARLjjD9mzBJXeW4G', 'member', '2026-01-10 18:30:41', 14, 'approved'),
+(276, 'Spondon Rema', 'spondon@mail.com', '$2b$10$rArOJJv6ysNQRdsfxNzUDuHyLdoPrWykkBjjSmSFpXvhX4YkD523u', 'member', '2026-01-10 18:31:14', 10, 'pending'),
+(277, 'Ifroem Rema', 'ifro@mail.com', '$2b$10$OwEh7JXaz9qC9WRasaGLcOYT4HaemIsPYGs4SzoF9r0wJ0AV6qdxi', 'member', '2026-01-10 18:31:44', 14, 'approved'),
+(278, 'Sorol', 'sorol@mail.com', '$2b$10$A.2QNkhDw1gVefD.psyrje2adgrGNO3o08WrKYXEZB1KnxsTHPuo.', 'member', '2026-01-10 18:32:15', 14, 'approved'),
+(279, 'Ashari', 'ashari@mail.com', '$2b$10$RoS2jyFlRJoHc.blWIB63OBMb82dLWYBfC0aLc7tkyFDVYT.3Ti4W', 'member', '2026-01-10 18:32:53', 14, 'approved'),
+(280, 'Easir Arafat', 'arafat@mail.com', '$2b$10$UkQBf7O2dKv52UpJJMjBRuEjiN7K3UeYjHNr4x347YLDGvdqcQhK6', 'member', '2026-01-10 18:33:38', 14, 'approved'),
+(281, 'Noornabi Noor', 'noornabi@mail.com', '$2b$10$2A9Wc.W0rBXb9kQcSxjiWe9O4esIilGZp5BdcL8imK8e4Uz8R8Neu', 'member', '2026-01-10 18:34:02', 14, 'approved'),
+(282, 'Tamjid Hossen', 'tamjid@mail.com', '$2b$10$LOmjjDE.fGMF4yaalysHbOyXwzFAuJBFs0TGw.rYoGttVhd9pEK4a', 'member', '2026-01-10 18:34:35', 14, 'approved'),
+(283, 'Tarmim', 'tarmim@mail.com', '$2b$10$zzDn3lkCTK8TTIptjeOnSemAD4gvxpSsWmgJf3g1jPfE3Fan6vM/6', 'member', '2026-01-10 18:34:56', 14, 'approved'),
+(284, 'Md. Tuhin', 'tuhin@mail.com', '$2b$10$UhBBpYrfAMKWrV1tqhz3DO11z71K0FfkP.IqMuEKlKFgZxDU9pow6', 'member', '2026-01-10 18:35:21', 14, 'approved'),
+(285, 'Monisha Akter', 'monisha@mail.com', '$2b$10$C.bdaGYleZrOAOx1IT/gbOielgX.axvCJWPkKAZIeMP/ezjnsw1UC', 'member', '2026-01-10 18:35:51', 14, 'approved'),
+(286, 'Fahad', 'fahad@mail.com', '$2b$10$cwvlj.QNy0AlLTfJ2uu2AOCWa1XG/6H7BiJIu5u10FpJUTQjXYSS2', 'member', '2026-01-10 18:36:15', 14, 'approved'),
+(287, 'Mehedi Hasan Bissash', 'bissash@mail.com', '$2b$10$VXj/KfPt2Qpt69cTjZotVu8VAiiGpKK2/3OyjnnPWtDOG.VAgiAwK', 'member', '2026-01-10 18:36:38', 14, 'approved'),
+(288, 'Rafi Hossen', 'rafi@mail.com', '$2b$10$cb5kVbuWao6vUSotx6ldOu3y6x9M.DN6ELiU24Ljq6WzriOOF3pXq', 'member', '2026-01-10 18:37:03', 14, 'approved'),
+(289, 'Shagor', 'shagor@mail.com', '$2b$10$gG.2Pi4uRBPN6oRRW6jt0O7sgiWv9j2kxMzB1kUeeOpk.DUOq4X9C', 'member', '2026-01-10 18:37:27', 14, 'approved'),
+(290, 'Ucchash', 'ucchash@mail.com', '$2b$10$PRWSgAX6O6NbPVVx88LIkeqXEylUCenKM7L78UbqU8SAG.R7bV7RS', 'member', '2026-01-10 18:37:48', 14, 'approved'),
+(291, 'Abul Bashar Abir', 'abir@mail.com', '$2b$10$vhNis02vziXrp5lKYgYGVO9gRsfJjIIUwpZVf/sBR6P0YfokYdRfi', 'member', '2026-01-10 18:38:06', 14, 'approved'),
+(292, 'Nabeel', 'nabeel@mail.com', '$2b$10$QT4yqQHKm5WYRXjwgUjuxuKnTeCEtLiclQNgHx6CLbOeOjZT94EO2', 'member', '2026-01-10 18:38:28', 14, 'approved'),
+(293, 'Era', 'era@mail.com', '$2b$10$0pOVmiTOm6nluCyl36K41.T.TpRTwaxjdKeWYlU0mfda494ixWF82', 'member', '2026-01-10 18:38:49', 14, 'approved'),
+(294, 'Saikat', 'saikat@mail.com', '$2b$10$w8uQoUwqwKy9INWtpd2IuO6Q.L5QEP6E1S6rpgX84JdvSEtaWzEBC', 'member', '2026-01-10 18:39:11', 14, 'approved'),
+(295, 'Zinnia', 'zinnia@mail.com', '$2b$10$X6XJyhJSaPcVUEi3cWid7eAJ5h51nAW2zJWheOJ94G10CHRbaGG3y', 'member', '2026-01-10 18:39:31', 14, 'approved'),
+(296, 'Sumon', 'sumon@mail.com', '$2b$10$yUAhDty1AV7.HLEtpn27NOWfCRjefWdW.BOrfAIJTNTUrAk9lMhKC', 'member', '2026-01-10 18:39:50', 14, 'approved'),
+(297, 'lamia', 'lamia@mail.com', '$2b$10$m8G6POi.eKp8.A16Jw4SWOdz5ZkbsInt946LHPlTtYW50PPmCKej6', 'member', '2026-01-10 18:40:13', 14, 'approved'),
+(298, 'Farzana Afroz', 'farzana@mail.com', '$2b$10$ldvnWY2jGgWMPX4obpr28ewaliHkhUB3rp9WGDlqjVJ40.FmcZVCS', 'member', '2026-01-10 18:40:49', 17, 'pending'),
+(299, 'Nibir Tarafder', 'nibir@mail.com', '$2b$10$SxZosxhddzeNIccDRSX1EuAPBxmOHXQ3BnJqcf55nZiVfSPV6.WzW', 'member', '2026-01-10 19:02:19', 14, 'approved'),
+(300, 'Saif Uddin Chaudhury Tamim', 'tamim@gmail.com', '$2b$10$8JUNVFL8bgi1Ttxp65TjZev8qlOfOFxk3xJqoHXlzHcis43UoUMwi', 'member', '2026-01-10 19:32:10', 13, 'approved'),
+(301, 'Tamjid Hossen', 'tamjid@mail.com', '$2b$10$yFukXrM6byrkh87Mn7wTfO2XpARBIxkdpImZ21HNp3zLYfI0CUf1W', 'member', '2026-01-10 19:32:43', 13, 'approved'),
+(302, 'md. Tuhin', 'tuhin@mail.com', '$2b$10$K99syY0vZA9k9lehl/ltdeWsCx4n0vb63jgS.IW/ZRXsTXvQ1PvuK', 'member', '2026-01-10 19:33:07', 13, 'approved'),
+(303, 'Nabeel Ahsan', 'nabeel@mail.com', '$2b$10$4IKTGOIVEK6Ed2YBTp67m.ayQof/IVU7NvKFhyCXqVYDpYjFGKsBO', 'member', '2026-01-10 19:33:38', 13, 'approved'),
+(304, 'Avishek Sarker', 'avishek@mail.com', '$2b$10$gQBIhtONKHhW.89h663cyeI8JV3nD4VjJP3Klf80hozkHnjp0hKZa', 'member', '2026-01-10 19:42:02', 13, 'approved');
+
+--
+-- Indexes for dumped tables
+--
+
+--
+-- Indexes for table `administrative_announcements`
+--
+ALTER TABLE `administrative_announcements`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `created_by` (`created_by`);
+
+--
+-- Indexes for table `admin_announcement_clubs`
+--
+ALTER TABLE `admin_announcement_clubs`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `announcement_id` (`announcement_id`),
+  ADD KEY `club_id` (`club_id`);
+
+--
+-- Indexes for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `club_id` (`club_id`),
+  ADD KEY `created_by` (`created_by`);
+
+--
+-- Indexes for table `authority_users`
+--
+ALTER TABLE `authority_users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `clubs`
+--
+ALTER TABLE `clubs`
+  ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `club_members`
+--
+ALTER TABLE `club_members`
+  ADD PRIMARY KEY (`email`,`club_id`),
+  ADD UNIQUE KEY `id` (`id`),
+  ADD KEY `club_id` (`club_id`);
+
+--
+-- Indexes for table `events`
+--
+ALTER TABLE `events`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `club_id` (`club_id`);
+
+--
+-- Indexes for table `event_registrations`
+--
+ALTER TABLE `event_registrations`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `event_user_unique` (`event_id`,`user_id`),
+  ADD KEY `user_id` (`user_id`);
+
+--
+-- Indexes for table `gallery_images`
+--
+ALTER TABLE `gallery_images`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `fk_gallery_club` (`club_id`),
+  ADD KEY `fk_gallery_uploader` (`uploaded_by`);
+
+--
+-- Indexes for table `messages`
+--
+ALTER TABLE `messages`
+  ADD PRIMARY KEY (`id`),
+  ADD KEY `sender_id` (`sender_id`),
+  ADD KEY `receiver_id` (`receiver_id`);
+
+--
+-- Indexes for table `profile`
+--
+ALTER TABLE `profile`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `email` (`email`);
+
+--
+-- Indexes for table `users`
+--
+ALTER TABLE `users`
+  ADD PRIMARY KEY (`id`),
+  ADD UNIQUE KEY `id` (`id`),
+  ADD UNIQUE KEY `unique_email_club` (`email`,`club_id`),
+  ADD KEY `club_id` (`club_id`);
+
+--
+-- AUTO_INCREMENT for dumped tables
+--
+
+--
+-- AUTO_INCREMENT for table `administrative_announcements`
+--
+ALTER TABLE `administrative_announcements`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `admin_announcement_clubs`
+--
+ALTER TABLE `admin_announcement_clubs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+
+--
+-- AUTO_INCREMENT for table `announcements`
+--
+ALTER TABLE `announcements`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
+
+--
+-- AUTO_INCREMENT for table `authority_users`
+--
+ALTER TABLE `authority_users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=2;
+
+--
+-- AUTO_INCREMENT for table `clubs`
+--
+ALTER TABLE `clubs`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=21;
+
+--
+-- AUTO_INCREMENT for table `club_members`
+--
+ALTER TABLE `club_members`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=218;
+
+--
+-- AUTO_INCREMENT for table `events`
+--
+ALTER TABLE `events`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=37;
+
+--
+-- AUTO_INCREMENT for table `event_registrations`
+--
+ALTER TABLE `event_registrations`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=7;
+
+--
+-- AUTO_INCREMENT for table `gallery_images`
+--
+ALTER TABLE `gallery_images`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=26;
+
+--
+-- AUTO_INCREMENT for table `messages`
+--
+ALTER TABLE `messages`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
+
+--
+-- AUTO_INCREMENT for table `profile`
+--
+ALTER TABLE `profile`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=401;
+
+--
+-- AUTO_INCREMENT for table `users`
+--
+ALTER TABLE `users`
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=305;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `administrative_announcements`
+--
+ALTER TABLE `administrative_announcements`
+  ADD CONSTRAINT `admin_announcements_ibfk_1` FOREIGN KEY (`created_by`) REFERENCES `authority_users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `admin_announcement_clubs`
+--
+ALTER TABLE `admin_announcement_clubs`
+  ADD CONSTRAINT `admin_announcement_clubs_ibfk_1` FOREIGN KEY (`announcement_id`) REFERENCES `administrative_announcements` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `announcements`
+--
+ALTER TABLE `announcements`
+  ADD CONSTRAINT `announcements_ibfk_1` FOREIGN KEY (`club_id`) REFERENCES `clubs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `announcements_ibfk_2` FOREIGN KEY (`created_by`) REFERENCES `users` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `events`
+--
+ALTER TABLE `events`
+  ADD CONSTRAINT `events_ibfk_1` FOREIGN KEY (`club_id`) REFERENCES `clubs` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `event_registrations`
+--
+ALTER TABLE `event_registrations`
+  ADD CONSTRAINT `event_registrations_ibfk_1` FOREIGN KEY (`event_id`) REFERENCES `events` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `event_registrations_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `club_members` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `gallery_images`
+--
+ALTER TABLE `gallery_images`
+  ADD CONSTRAINT `fk_gallery_club` FOREIGN KEY (`club_id`) REFERENCES `clubs` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `fk_gallery_uploader` FOREIGN KEY (`uploaded_by`) REFERENCES `club_members` (`id`) ON DELETE SET NULL;
+
+--
+-- Constraints for table `messages`
+--
+ALTER TABLE `messages`
+  ADD CONSTRAINT `messages_ibfk_1` FOREIGN KEY (`sender_id`) REFERENCES `club_members` (`id`) ON DELETE CASCADE,
+  ADD CONSTRAINT `messages_ibfk_2` FOREIGN KEY (`receiver_id`) REFERENCES `club_members` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `users`
+--
+ALTER TABLE `users`
+  ADD CONSTRAINT `users_ibfk_1` FOREIGN KEY (`club_id`) REFERENCES `clubs` (`id`);
+COMMIT;
+
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
