@@ -29,6 +29,7 @@ The system supports three types of users:
 
 ---
 
+
 ## Tech Stack
 
 ### Frontend
@@ -36,6 +37,7 @@ The system supports three types of users:
 - Tailwind CSS
 - Axios
 - React Router DOM
+
 
 ### Backend
 - Node.js
@@ -46,42 +48,67 @@ The system supports three types of users:
 
 ---
 
+
 ##  Project Structure
 
 club_management_system_JKKNIU/
+
 │
+
 ├── frontend/ # React Frontend
+
 │ ├── src/
+
 | |  |__ Pages/ 
+
 │ └── public/
+
 │
+
 ├── backend/ # Node + Express Backend
+
 │ ├── routes/
+
 │ ├── controllers/
+
 │ ├── config/
+
 │ └── models/
+
 │ |__ Server.js
+
 └── database/ # MySQL Database files
+
+
 
 ## Setup Backend
 
 cd backend
+
 npm install
+
 npm start
 
 Backend will run into: **http://localhost:5000**
 
+
 ## Frontend Setup
 
 cd frontend
+
 npm install
+
 npm start
+
 
 Frontend will run on: **http://localhost:3000**
 
+
 ## Database Setup
 1. Download and Install MySQL
-2. Create Database cms , then import the folder of sql database.
+
+2.Write the SQL code, **Create Database cms** ,
+Then import the folder of sql database.
 
 ## Authentication System
 
@@ -103,17 +130,20 @@ Frontend will run on: **http://localhost:3000**
 3. **Payment integration for club fees**
 
 
+
 ## Contributing
 
 Pull requests are welcome.
 For major changes, please open an issue first to discuss what you would like to change.
 
+
 ## License
 
 This project is developed for academic purposes at JKKNIU.
 
+
 ## Developer
 
-Asif Hasan Plabon
-B.Sc in Environmental Science & Engineering, JKKNIU
-Aspiring Full Stack Web Developer
+**Asif Hasan Plabon**
+**B.Sc in Environmental Science & Engineering, JKKNIU**
+**Aspiring Full Stack Web Developer**
