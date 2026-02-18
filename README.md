@@ -59,7 +59,7 @@ club_management_system_JKKNIU/
 
 │ ├── src/
 
-| |  |__ Pages/ 
+|   |   |__ Pages/ 
 
 │ └── public/
 
@@ -145,5 +145,7 @@ This project is developed for academic purposes at JKKNIU.
 ## Developer
 
 **Asif Hasan Plabon**
+
 **B.Sc in Environmental Science & Engineering, JKKNIU**
+
 **Aspiring Full Stack Web Developer**
